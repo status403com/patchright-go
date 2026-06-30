@@ -256,6 +256,9 @@ func (r *routeImpl) internalContinue(isFallback bool) error {
 		overrides["postData"] = base64.StdEncoding.EncodeToString(postDataBuf)
 	}
 	overrides["isFallback"] = isFallback
+	if r.Request().(*requestImpl).fallbackOverrides.PatchrightInitScript {
+		overrides["patchrightInitScript"] = true
+	}
 	return r.raceWithPageClose(func() error {
 		_, err := r.channel.Send("continue", overrides)
 		return err

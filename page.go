@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -817,7 +818,14 @@ func (p *pageImpl) installInjectRoute() error {
 		return nil
 	}
 	return p.Route("**/*", func(route Route) {
-		_ = route.Fallback(RouteFallbackOptions{})
+		req := route.Request()
+		if req.ResourceType() == "document" && strings.HasPrefix(req.URL(), "http") {
+			_ = route.Fallback(RouteFallbackOptions{
+				PatchrightInitScript: Bool(true),
+			})
+		} else {
+			_ = route.Fallback(RouteFallbackOptions{})
+		}
 	})
 }
 

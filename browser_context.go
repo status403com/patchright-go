@@ -39,6 +39,7 @@ type browserContextImpl struct {
 	harRouters      []*harRouter
 	clock           Clock
 	credentials     Credentials
+	routeInjecting  atomic.Bool
 }
 
 func (b *browserContextImpl) Clock() Clock {
@@ -228,7 +229,26 @@ func (b *browserContextImpl) SetOffline(offline bool) error {
 	return err
 }
 
+func (b *browserContextImpl) installInjectRoute() error {
+	if !b.routeInjecting.CompareAndSwap(false, true) {
+		return nil
+	}
+	return b.Route("**/*", func(route Route) {
+		req := route.Request()
+		if req.ResourceType() == "document" && strings.HasPrefix(req.URL(), "http") {
+			_ = route.Fallback(RouteFallbackOptions{
+				PatchrightInitScript: Bool(true),
+			})
+		} else {
+			_ = route.Fallback(RouteFallbackOptions{})
+		}
+	})
+}
+
 func (b *browserContextImpl) AddInitScript(script Script) error {
+	if err := b.installInjectRoute(); err != nil {
+		return err
+	}
 	var source string
 	if script.Content != nil {
 		source = *script.Content
@@ -247,6 +267,9 @@ func (b *browserContextImpl) AddInitScript(script Script) error {
 }
 
 func (b *browserContextImpl) ExposeBinding(name string, binding BindingCallFunction) error {
+	if err := b.installInjectRoute(); err != nil {
+		return err
+	}
 	for _, page := range b.Pages() {
 		if _, ok := page.(*pageImpl).bindings.Load(name); ok {
 			return fmt.Errorf("Function '%s' has been already registered in one of the pages", name)

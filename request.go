@@ -9,10 +9,11 @@ import (
 )
 
 type serializedFallbackOverrides struct {
-	URL            *string
-	Method         *string
-	Headers        map[string]string
-	PostDataBuffer []byte
+	URL                  *string
+	Method               *string
+	Headers              map[string]string
+	PostDataBuffer       []byte
+	PatchrightInitScript bool
 }
 
 type requestImpl struct {
@@ -260,6 +261,9 @@ func (r *requestImpl) applyFallbackOverrides(options RouteFallbackOptions) {
 				r.fallbackOverrides.PostDataBuffer = data
 			}
 		}
+	}
+	if options.PatchrightInitScript != nil && *options.PatchrightInitScript {
+		r.fallbackOverrides.PatchrightInitScript = true
 	}
 }
 

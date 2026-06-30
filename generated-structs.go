@@ -4404,6 +4404,8 @@ type RouteFallbackOptions struct {
 	// If set changes the request URL. New URL must have same protocol as original one. Changing the URL won't affect the
 	// route matching, all the routes are matched using the original request URL.
 	URL *string `json:"url"`
+	// Patchright: if true, injects init scripts into document responses via route interception.
+	PatchrightInitScript *bool `json:"patchrightInitScript"`
 }
 
 type RouteFetchOptions struct {

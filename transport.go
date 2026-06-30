@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 
 	"github.com/go-jose/go-jose/v3/json"
 )
@@ -20,6 +21,7 @@ type pipeTransport struct {
 	writer    io.WriteCloser
 	bufReader *bufio.Reader
 	closed    chan struct{}
+	closeOnce sync.Once
 	onClose   func() error
 	process   *os.Process
 }
@@ -87,12 +89,11 @@ func (t *pipeTransport) Send(msg map[string]any) error {
 }
 
 func (t *pipeTransport) Close() error {
-	select {
-	case <-t.closed:
-		return nil
-	default:
-		return t.onClose()
-	}
+	var err error
+	t.closeOnce.Do(func() {
+		err = t.onClose()
+	})
+	return err
 }
 
 func (t *pipeTransport) isClosed() bool {
@@ -123,15 +124,10 @@ func newPipeTransport(driver *PatchrightDriver, stderr io.Writer) (transport, er
 	t.bufReader = bufio.NewReader(stdout)
 
 	t.onClose = func() error {
-		select {
-		case <-t.closed:
-		default:
-			close(t.closed)
-		}
+		close(t.closed)
 		if err := t.writer.Close(); err != nil {
 			return err
 		}
-		// playwright-cli will exit when its stdin is closed
 		if err := cmd.Wait(); err != nil {
 			return err
 		}

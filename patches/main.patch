@@ -1,0 +1,2660 @@
+diff --git a/docs/src/api/class-apirequest.md b/docs/src/api/class-apirequest.md
+index d27e22b03..fd06a0784 100644
+--- a/docs/src/api/class-apirequest.md
++++ b/docs/src/api/class-apirequest.md
+@@ -62,7 +62,7 @@ Methods like [`method: APIRequestContext.get`] take the base URL into considerat
+ 
+ ### option: APIRequest.newContext.storageState
+ * since: v1.16
+-* langs: js, python
++* langs: js, python, go
+ - `storageState` <[path]|[Object]>
+   - `cookies` <[Array]<[Object]>>
+     - `name` <[string]>
+@@ -73,6 +73,7 @@ Methods like [`method: APIRequestContext.get`] take the base URL into considerat
+     - `httpOnly` <[boolean]>
+     - `secure` <[boolean]>
+     - `sameSite` <[SameSiteAttribute]<"Strict"|"Lax"|"None">>
++    - `partitionKey` ?<[string]>
+   - `origins` <[Array]<[Object]>>
+     - `origin` <[string]>
+     - `localStorage` <[Array]<[Object]>>
+diff --git a/docs/src/api/class-apirequestcontext.md b/docs/src/api/class-apirequestcontext.md
+index 2ddc3815f..6e80f44c0 100644
+--- a/docs/src/api/class-apirequestcontext.md
++++ b/docs/src/api/class-apirequestcontext.md
+@@ -163,6 +163,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.delete.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.17
+ 
++### option: APIRequestContext.delete.data = %%-go-fetch-option-data-%%
++* since: v1.17
++
+ ### option: APIRequestContext.delete.form = %%-js-fetch-option-form-%%
+ * since: v1.17
+ 
+@@ -172,6 +175,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.delete.form = %%-csharp-fetch-option-form-%%
+ * since: v1.17
+ 
++### option: APIRequestContext.delete.form = %%-go-fetch-option-form-%%
++* since: v1.17
++
+ ### option: APIRequestContext.delete.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.17
+ 
+@@ -181,6 +187,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.delete.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.17
+ 
++### option: APIRequestContext.delete.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.17
++
+ ### option: APIRequestContext.delete.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -328,7 +337,7 @@ Target URL or Request to get all parameters from.
+ 
+ ### option: APIRequestContext.fetch.method
+ * since: v1.16
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `method` <[string]>
+ 
+ If set changes the fetch method (e.g. [PUT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT) or
+@@ -340,6 +349,9 @@ If set changes the fetch method (e.g. [PUT](https://developer.mozilla.org/en-US/
+ ### option: APIRequestContext.fetch.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.fetch.data = %%-go-fetch-option-data-%%
++* since: v1.16
++
+ ### option: APIRequestContext.fetch.form = %%-js-fetch-option-form-%%
+ * since: v1.16
+ 
+@@ -349,6 +361,9 @@ If set changes the fetch method (e.g. [PUT](https://developer.mozilla.org/en-US/
+ ### option: APIRequestContext.fetch.form = %%-csharp-fetch-option-form-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.fetch.form = %%-go-fetch-option-form-%%
++* since: v1.16
++
+ ### option: APIRequestContext.fetch.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.16
+ 
+@@ -358,6 +373,9 @@ If set changes the fetch method (e.g. [PUT](https://developer.mozilla.org/en-US/
+ ### option: APIRequestContext.fetch.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.fetch.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.16
++
+ ### option: APIRequestContext.fetch.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -453,6 +471,9 @@ await request.GetAsync("https://example.com/api/getText", new() { Params = query
+ ### option: APIRequestContext.get.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.26
+ 
++### option: APIRequestContext.get.data = %%-go-fetch-option-data-%%
++* since: v1.26
++
+ ### option: APIRequestContext.get.form = %%-js-fetch-option-form-%%
+ * since: v1.26
+ 
+@@ -462,6 +483,9 @@ await request.GetAsync("https://example.com/api/getText", new() { Params = query
+ ### option: APIRequestContext.get.form = %%-csharp-fetch-option-form-%%
+ * since: v1.26
+ 
++### option: APIRequestContext.get.form = %%-go-fetch-option-form-%%
++* since: v1.26
++
+ ### option: APIRequestContext.get.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.26
+ 
+@@ -471,6 +495,9 @@ await request.GetAsync("https://example.com/api/getText", new() { Params = query
+ ### option: APIRequestContext.get.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.26
+ 
++### option: APIRequestContext.get.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.26
++
+ ### option: APIRequestContext.get.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -518,6 +545,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.head.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.26
+ 
++### option: APIRequestContext.head.data = %%-go-fetch-option-data-%%
++* since: v1.26
++
+ ### option: APIRequestContext.head.form = %%-python-fetch-option-form-%%
+ * since: v1.26
+ 
+@@ -527,6 +557,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.head.form = %%-csharp-fetch-option-form-%%
+ * since: v1.26
+ 
++### option: APIRequestContext.head.form = %%-go-fetch-option-form-%%
++* since: v1.26
++
+ ### option: APIRequestContext.head.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.26
+ 
+@@ -536,6 +569,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.head.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.26
+ 
++### option: APIRequestContext.head.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.26
++
+ ### option: APIRequestContext.head.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -583,6 +619,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.patch.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.patch.data = %%-go-fetch-option-data-%%
++* since: v1.16
++
+ ### option: APIRequestContext.patch.form = %%-js-fetch-option-form-%%
+ * since: v1.16
+ 
+@@ -592,6 +631,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.patch.form = %%-csharp-fetch-option-form-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.patch.form = %%-go-fetch-option-form-%%
++* since: v1.16
++
+ ### option: APIRequestContext.patch.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.16
+ 
+@@ -601,6 +643,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.patch.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.patch.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.16
++
+ ### option: APIRequestContext.patch.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -769,6 +814,9 @@ await request.PostAsync("https://example.com/api/uploadScript", new() { Multipar
+ ### option: APIRequestContext.post.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.post.data = %%-go-fetch-option-data-%%
++* since: v1.16
++
+ ### option: APIRequestContext.post.form = %%-js-fetch-option-form-%%
+ * since: v1.16
+ 
+@@ -778,6 +826,9 @@ await request.PostAsync("https://example.com/api/uploadScript", new() { Multipar
+ ### option: APIRequestContext.post.form = %%-csharp-fetch-option-form-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.post.form = %%-go-fetch-option-form-%%
++* since: v1.16
++
+ ### option: APIRequestContext.post.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.16
+ 
+@@ -787,6 +838,9 @@ await request.PostAsync("https://example.com/api/uploadScript", new() { Multipar
+ ### option: APIRequestContext.post.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.post.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.16
++
+ ### option: APIRequestContext.post.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -834,6 +888,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.put.data = %%-js-python-csharp-fetch-option-data-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.put.data = %%-go-fetch-option-data-%%
++* since: v1.16
++
+ ### option: APIRequestContext.put.form = %%-python-fetch-option-form-%%
+ * since: v1.16
+ 
+@@ -843,6 +900,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.put.form = %%-csharp-fetch-option-form-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.put.form = %%-go-fetch-option-form-%%
++* since: v1.16
++
+ ### option: APIRequestContext.put.multipart = %%-js-fetch-option-multipart-%%
+ * since: v1.16
+ 
+@@ -852,6 +912,9 @@ context cookies from the response. The method will automatically follow redirect
+ ### option: APIRequestContext.put.multipart = %%-csharp-fetch-option-multipart-%%
+ * since: v1.16
+ 
++### option: APIRequestContext.put.multipart = %%-go-fetch-option-multipart-%%
++* since: v1.16
++
+ ### option: APIRequestContext.put.timeout = %%-js-python-csharp-fetch-option-timeout-%%
+ * since: v1.16
+ 
+@@ -879,6 +942,7 @@ context cookies from the response. The method will automatically follow redirect
+     - `httpOnly` <[boolean]>
+     - `secure` <[boolean]>
+     - `sameSite` <[SameSiteAttribute]<"Strict"|"Lax"|"None">>
++    - `partitionKey` ?<[string]>
+   - `origins` <[Array]<[Object]>>
+     - `origin` <[string]>
+     - `localStorage` <[Array]<[Object]>>
+@@ -897,6 +961,7 @@ Returns storage state for this request context, contains current cookies and loc
+ 
+ ### option: APIRequestContext.storageState.indexedDB
+ * since: v1.51
++* langs: js, python, java, csharp, go
+ - `indexedDB` ?<boolean>
+ 
+ Set to `true` to include IndexedDB in the storage state snapshot.
+diff --git a/docs/src/api/class-apiresponse.md b/docs/src/api/class-apiresponse.md
+index 48ca44eb8..6fc5d7d2c 100644
+--- a/docs/src/api/class-apiresponse.md
++++ b/docs/src/api/class-apiresponse.md
+@@ -68,7 +68,7 @@ Headers with multiple entries, such as `Set-Cookie`, appear in the array multipl
+ 
+ ## async method: APIResponse.json
+ * since: v1.16
+-* langs: js, python
++* langs: js, python, go
+ - returns: <[Serializable]>
+ 
+ Returns the JSON representation of response body.
+diff --git a/docs/src/api/class-apiresponseassertions.md b/docs/src/api/class-apiresponseassertions.md
+index 720b3dcd4..16ff648da 100644
+--- a/docs/src/api/class-apiresponseassertions.md
++++ b/docs/src/api/class-apiresponseassertions.md
+@@ -66,7 +66,7 @@ public class ExampleTests : PageTest
+ 
+ ## property: APIResponseAssertions.not
+ * since: v1.20
+-* langs: java, js, csharp
++* langs: java, js, csharp, go
+ - returns: <[APIResponseAssertions]>
+ 
+ Makes the assertion check for the opposite condition.
+diff --git a/docs/src/api/class-browser.md b/docs/src/api/class-browser.md
+index 2c07e98c5..9dac60a4b 100644
+--- a/docs/src/api/class-browser.md
++++ b/docs/src/api/class-browser.md
+@@ -267,6 +267,9 @@ await browser.CloseAsync();
+ ### option: Browser.newContext.storageState = %%-js-python-context-option-storage-state-%%
+ * since: v1.8
+ 
++### option: Browser.newContext.storageState = %%-go-context-option-storage-state-%%
++* since: v1.8
++
+ ### option: Browser.newContext.storageState = %%-csharp-java-context-option-storage-state-%%
+ * since: v1.8
+ 
+@@ -295,6 +298,9 @@ testing frameworks should explicitly create [`method: Browser.newContext`] follo
+ ### option: Browser.newPage.storageState = %%-js-python-context-option-storage-state-%%
+ * since: v1.8
+ 
++### option: Browser.newPage.storageState = %%-go-context-option-storage-state-%%
++* since: v1.8
++
+ ### option: Browser.newPage.storageState = %%-csharp-java-context-option-storage-state-%%
+ * since: v1.8
+ 
+@@ -357,7 +363,7 @@ Allows to wait for async listeners to complete or to ignore subsequent errors fr
+ 
+ ## async method: Browser.startTracing
+ * since: v1.11
+-* langs: java, js, python
++* langs: java, js, python, go
+ 
+ :::note
+ This API controls [Chromium Tracing](https://www.chromium.org/developers/how-tos/trace-event-profiling-tool) which is a low-level chromium-specific debugging tool. API to control [Playwright Tracing](../trace-viewer) could be found [here](./class-tracing).
+@@ -395,10 +401,18 @@ browser.stop_tracing()
+ 
+ ### param: Browser.startTracing.page
+ * since: v1.11
++* langs: js, java, python, csharp
+ - `page` ?<[Page]>
+ 
+ Optional, if specified, tracing includes screenshots of the given page.
+ 
++### option: Browser.startTracing.page
++* since: v1.11
++* langs: go
++- `page` <[Page]>
++
++Optional, if specified, tracing includes screenshots of the given page.
++
+ ### option: Browser.startTracing.path
+ * since: v1.11
+ - `path` <[path]>
+@@ -419,7 +433,7 @@ specify custom categories to use instead of default.
+ 
+ ## async method: Browser.stopTracing
+ * since: v1.11
+-* langs: java, js, python
++* langs: java, js, python, go
+ - returns: <[Buffer]>
+ 
+ :::note
+diff --git a/docs/src/api/class-browsercontext.md b/docs/src/api/class-browsercontext.md
+index c5e504b48..1d968c7d9 100644
+--- a/docs/src/api/class-browsercontext.md
++++ b/docs/src/api/class-browsercontext.md
+@@ -440,7 +440,7 @@ The order of evaluation of multiple scripts installed via [`method: BrowserConte
+ 
+ ### param: BrowserContext.addInitScript.script
+ * since: v1.8
+-* langs: js
++* langs: js, go
+ - `script` <[function]|[string]|[Object]>
+   - `path` ?<[path]> Path to the JavaScript file. If `path` is a relative path, then it is resolved relative to the
+     current working directory. Optional.
+@@ -1237,7 +1237,7 @@ A glob pattern, regex pattern, URL pattern, or predicate that receives a [URL] t
+ 
+ ### param: BrowserContext.route.url
+ * since: v1.8
+-* langs: python, csharp, java
++* langs: python, csharp, java, go
+ - `url` <[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ A glob pattern, regex pattern, or predicate that receives a [URL] to match during routing. If [`option: Browser.newContext.baseURL`] is set in the context options and the provided URL is a string that does not start with `*`, it is resolved using the [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+@@ -1251,7 +1251,7 @@ handler function to route the request.
+ 
+ ### param: BrowserContext.route.handler
+ * since: v1.8
+-* langs: csharp, java
++* langs: csharp, java,go
+ - `handler` <[function]\([Route]\)>
+ 
+ handler function to route the request.
+@@ -1394,7 +1394,7 @@ Handler function to route the WebSocket.
+ 
+ ### param: BrowserContext.routeWebSocket.handler
+ * since: v1.48
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `handler` <[function]\([WebSocketRoute]\)>
+ 
+ Handler function to route the WebSocket.
+@@ -1402,7 +1402,7 @@ Handler function to route the WebSocket.
+ 
+ ## method: BrowserContext.serviceWorkers
+ * since: v1.11
+-* langs: js, python
++* langs: js, python, go
+ - returns: <[Array]<[Worker]>>
+ 
+ :::note
+@@ -1543,6 +1543,7 @@ Whether to emulate network being offline for the browser context.
+     - `httpOnly` <[boolean]>
+     - `secure` <[boolean]>
+     - `sameSite` <[SameSiteAttribute]<"Strict"|"Lax"|"None">>
++    - `partitionKey` ?<[string]>
+   - `origins` <[Array]<[Object]>>
+     - `origin` <[string]>
+     - `localStorage` <[Array]<[Object]>>
+@@ -1561,6 +1562,7 @@ Returns storage state for this browser context, contains current cookies, local
+ 
+ ### option: BrowserContext.storageState.indexedDB
+ * since: v1.51
++* langs: js, python, java, csharp, go
+ - `indexedDB` ?<boolean>
+ 
+ Set to `true` to include [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) in the storage state snapshot.
+@@ -1634,7 +1636,7 @@ A glob pattern, regex pattern, URL pattern, or predicate receiving [URL] used to
+ 
+ ### param: BrowserContext.unroute.url
+ * since: v1.8
+-* langs: python, csharp, java
++* langs: python, csharp, java, go
+ - `url` <[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ A glob pattern, regex pattern, or predicate receiving [URL] used to register a routing with
+@@ -1647,6 +1649,13 @@ A glob pattern, regex pattern, or predicate receiving [URL] used to register a r
+ 
+ Optional handler function used to register a routing with [`method: BrowserContext.route`].
+ 
++### param: BrowserContext.unroute.handler
++* since: v1.8
++* langs: go
++- `handler` ?<[function]\([Route]\)>
++
++Optional handler function used to register a routing with [`method: BrowserContext.route`].
++
+ ### param: BrowserContext.unroute.handler
+ * since: v1.8
+ * langs: csharp, java
+@@ -1688,7 +1697,8 @@ Condition to wait for.
+ 
+ ## async method: BrowserContext.waitForConsoleMessage
+ * since: v1.34
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectConsoleMessage
+   - alias-python: expect_console_message
+   - alias-csharp: RunAndWaitForConsoleMessage
+ - returns: <[ConsoleMessage]>
+@@ -1719,7 +1729,8 @@ Receives the [ConsoleMessage] object and resolves to truthy value when the waiti
+ 
+ ## async method: BrowserContext.waitForEvent
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
++  - alias-go: ExpectEvent
+   - alias-python: expect_event
+ - returns: <[any]>
+ 
+@@ -1785,7 +1796,8 @@ Either a predicate that receives an event or an options object. Optional.
+ 
+ ## async method: BrowserContext.waitForPage
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectPage
+   - alias-python: expect_page
+   - alias-csharp: RunAndWaitForPage
+ - returns: <[Page]>
+@@ -1804,7 +1816,7 @@ Will throw an error if the context closes before new [Page] is created.
+ 
+ ### option: BrowserContext.waitForPage.predicate
+ * since: v1.9
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+ - `predicate` <[function]\([Page]\):[boolean]>
+ 
+ Receives the [Page] object and resolves to truthy value when the waiting should resolve.
+@@ -1817,7 +1829,8 @@ Receives the [Page] object and resolves to truthy value when the waiting should
+ 
+ ## async method: BrowserContext.waitForEvent2
+ * since: v1.8
+-* langs: python
++* langs: python, go
++  - alias-go: WaitForEvent
+   - alias-python: wait_for_event
+ - returns: <[any]>
+ 
+diff --git a/docs/src/api/class-cdpsession.md b/docs/src/api/class-cdpsession.md
+index d14b51a86..4e0959473 100644
+--- a/docs/src/api/class-cdpsession.md
++++ b/docs/src/api/class-cdpsession.md
+@@ -126,7 +126,7 @@ Optional method parameters.
+ 
+ ### param: CDPSession.send.params
+ * since: v1.30
+-* langs: csharp
++* langs: csharp, go
+   - alias-csharp: args
+ - `params` ?<[Map<string, Object>]>
+ 
+diff --git a/docs/src/api/class-clock.md b/docs/src/api/class-clock.md
+index e5610b424..748b93b68 100644
+--- a/docs/src/api/class-clock.md
++++ b/docs/src/api/class-clock.md
+@@ -71,7 +71,7 @@ Fake timers are used to manually control the flow of time in tests. They allow y
+ Time to initialize with, current system time by default.
+ 
+ ### option: Clock.install.time
+-* langs: python
++* langs: python, go
+ * since: v1.45
+ - `time` <[float]|[string]|[Date]>
+ 
+@@ -204,7 +204,7 @@ page.clock().pauseAt(format.parse("2024-12-10T10:00:00"));
+ Time to pause at.
+ 
+ ### param: Clock.pauseAt.time
+-* langs: python
++* langs: python, go
+ * since: v1.45
+ - `time` <[float]|[string]|[Date]>
+ 
+@@ -270,7 +270,7 @@ await page.Clock.SetFixedTimeAsync("2020-02-02");
+ Time to be set in milliseconds.
+ 
+ ### param: Clock.setFixedTime.time
+-* langs: python
++* langs: python, go
+ * since: v1.45
+ - `time` <[float]|[string]|[Date]>
+ 
+@@ -328,7 +328,7 @@ await page.Clock.SetSystemTimeAsync("2020-02-02");
+ Time to be set in milliseconds.
+ 
+ ### param: Clock.setSystemTime.time
+-* langs: python
++* langs: python, go
+ * since: v1.45
+ - `time` <[float]|[string]|[Date]>
+ 
+diff --git a/docs/src/api/class-consolemessage.md b/docs/src/api/class-consolemessage.md
+index 020d2efba..9e15e8223 100644
+--- a/docs/src/api/class-consolemessage.md
++++ b/docs/src/api/class-consolemessage.md
+@@ -112,7 +112,7 @@ List of arguments passed to a `console` function call. See also [`event: Page.co
+ 
+ ## method: ConsoleMessage.location
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
+ - returns: <[Object]>
+   - `url` <[string]> URL of the resource.
+   - `line` <[int]> 0-based line number in the resource.
+@@ -139,6 +139,13 @@ The page that produced this console message, if any.
+ 
+ The text of the console message.
+ 
++## method: ConsoleMessage.string
++* since: v1.8
++* langs: go
++- returns: <[string]>
++
++The text of the console message.
++
+ ## method: ConsoleMessage.timestamp
+ * since: v1.59
+ - returns: <[float]>
+@@ -152,7 +159,7 @@ The timestamp of the console message in milliseconds since the Unix epoch.
+ 
+ ## method: ConsoleMessage.type
+ * since: v1.8
+-* langs: csharp, java
++* langs: csharp, java, go
+ - returns: <[string]>
+ 
+ One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'`, `'dir'`, `'dirxml'`, `'table'`,
+diff --git a/docs/src/api/class-frame.md b/docs/src/api/class-frame.md
+index c73aa88e7..413adb658 100644
+--- a/docs/src/api/class-frame.md
++++ b/docs/src/api/class-frame.md
+@@ -283,6 +283,9 @@ When all steps combined have not finished during the specified [`option: timeout
+ ### option: Frame.click.trial = %%-input-trial-with-modifiers-%%
+ * since: v1.11
+ 
++### option: Frame.click.steps = %%-input-mousemove-steps-%%
++* since: v1.57
++
+ ## async method: Frame.content
+ * since: v1.8
+ - returns: <[string]>
+@@ -1951,7 +1954,7 @@ await page.MainFrame.WaitForFunctionAsync("selector => !!document.querySelector(
+ 
+ Optional argument to pass to [`param: expression`].
+ 
+-### option: Frame.waitForFunction.polling = %%-js-python-wait-for-function-polling-%%
++### option: Frame.waitForFunction.polling = %%-js-python-go-wait-for-function-polling-%%
+ * since: v1.8
+ 
+ ### option: Frame.waitForFunction.polling = %%-csharp-java-wait-for-function-polling-%%
+@@ -2003,6 +2006,11 @@ await frame.WaitForLoadStateAsync(); // Defaults to LoadState.Load
+ ```
+ 
+ ### param: Frame.waitForLoadState.state = %%-wait-for-load-state-state-%%
++* langs: js, python, csharp, java
++* since: v1.8
++
++### option: Frame.waitForLoadState.state = %%-wait-for-load-state-state-%%
++* langs: go
+ * since: v1.8
+ 
+ ### option: Frame.waitForLoadState.timeout = %%-navigation-timeout-%%
+@@ -2015,6 +2023,7 @@ await frame.WaitForLoadStateAsync(); // Defaults to LoadState.Load
+ * since: v1.8
+ * deprecated: This method is inherently racy, please use [`method: Frame.waitForURL`] instead.
+ * langs:
++  * alias-go: ExpectNavigation
+   * alias-python: expect_navigation
+   * alias-csharp: RunAndWaitForNavigation
+ - returns: <[null]|[Response]>
+diff --git a/docs/src/api/class-locator.md b/docs/src/api/class-locator.md
+index 59a98671a..0ce1f8c95 100644
+--- a/docs/src/api/class-locator.md
++++ b/docs/src/api/class-locator.md
+@@ -655,7 +655,7 @@ Locator description.
+ 
+ ## method: Locator.description
+ * since: v1.57
+-* langs: python, java, csharp
++* langs: python, java, csharp, go
+ - returns: <[null]|[string]>
+ 
+ Returns locator description previously set with [`method: Locator.describe`]. Returns `null` if no custom description has been set.
+@@ -1091,7 +1091,7 @@ Optional argument to pass to [`param: expression`].
+ 
+ ### option: Locator.evaluate.timeout
+ * since: v1.14
+-* langs: python, java, csharp
++* langs: python, java, csharp, go
+ - `timeout` <[float]>
+ 
+ Maximum time in milliseconds to wait for the locator before evaluating. Note that after locator is resolved, evaluation itself is not limited by the timeout. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+@@ -1188,7 +1188,7 @@ Optional argument to pass to [`param: expression`].
+ 
+ ### option: Locator.evaluateHandle.timeout
+ * since: v1.14
+-* langs: python, java, csharp
++* langs: python, java, csharp, go
+ - `timeout` <[float]>
+ 
+ Maximum time in milliseconds to wait for the locator before evaluating. Note that after locator is resolved, evaluation itself is not limited by the timeout. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+diff --git a/docs/src/api/class-locatorassertions.md b/docs/src/api/class-locatorassertions.md
+index dcfafda26..3940e6633 100644
+--- a/docs/src/api/class-locatorassertions.md
++++ b/docs/src/api/class-locatorassertions.md
+@@ -67,7 +67,7 @@ public class ExampleTests : PageTest
+ 
+ ## property: LocatorAssertions.not
+ * since: v1.20
+-* langs: java, js, csharp
++* langs: java, js, csharp, go
+ - returns: <[LocatorAssertions]>
+ 
+ Makes the assertion check for the opposite condition.
+@@ -1287,7 +1287,7 @@ Expected substring or RegExp or a list of those.
+ 
+ ### param: LocatorAssertions.toContainText.expected
+ * since: v1.18
+-* langs: python
++* langs: python, go
+ - `expected` <[string]|[RegExp]|[Array]<[string]>|[Array]<[RegExp]>|[Array]<[string]|[RegExp]>>
+ 
+ Expected substring or RegExp or a list of those.
+@@ -1631,7 +1631,7 @@ Expected class or RegExp or a list of those.
+ 
+ ### param: LocatorAssertions.toHaveClass.expected
+ * since: v1.18
+-* langs: python
++* langs: python, go
+ - `expected` <[string]|[RegExp]|[Array]<[string]>|[Array]<[RegExp]>|[Array]<[string]|[RegExp]>>
+ 
+ Expected class or RegExp or a list of those.
+@@ -2164,7 +2164,7 @@ Expected string or RegExp or a list of those.
+ 
+ ### param: LocatorAssertions.toHaveText.expected
+ * since: v1.18
+-* langs: python
++* langs: python, go
+ - `expected` <[string]|[RegExp]|[Array]<[string]>|[Array]<[RegExp]>|[Array]<[string]|[RegExp]>>
+ 
+ Expected string or RegExp or a list of those.
+@@ -2298,7 +2298,7 @@ await Expect(locator).ToHaveValuesAsync(new Regex[] { new Regex("R"), new Regex(
+ 
+ ### param: LocatorAssertions.toHaveValues.values
+ * since: v1.23
+-* langs: js
++* langs: js, go
+ - `values` <[Array]<[string]|[RegExp]>>
+ 
+ Expected options currently selected.
+diff --git a/docs/src/api/class-page.md b/docs/src/api/class-page.md
+index 606bab5d3..d8e7f9a8e 100644
+--- a/docs/src/api/class-page.md
++++ b/docs/src/api/class-page.md
+@@ -615,7 +615,7 @@ The order of evaluation of multiple scripts installed via [`method: BrowserConte
+ 
+ ### param: Page.addInitScript.script
+ * since: v1.8
+-* langs: js
++* langs: js, go
+ - `script` <[function]|[string]|[Object]>
+   - `path` ?<[path]> Path to the JavaScript file. If `path` is a relative path, then it is resolved relative to the
+     current working directory. Optional.
+@@ -717,6 +717,7 @@ Brings page to front (activates tab).
+ 
+ ## async method: Page.cancelPickLocator
+ * since: v1.59
++* langs: js
+ 
+ Cancels an ongoing [`method: Page.pickLocator`] call by deactivating pick locator mode.
+ If no pick locator mode is active, this method is a no-op.
+@@ -815,6 +816,9 @@ When all steps combined have not finished during the specified [`option: timeout
+ ### option: Page.click.trial = %%-input-trial-with-modifiers-%%
+ * since: v1.11
+ 
++### option: Page.click.steps = %%-input-mousemove-steps-%%
++* since: v1.57
++
+ ## async method: Page.close
+ * since: v1.8
+ 
+@@ -1270,6 +1274,14 @@ Passing `null` disables CSS media emulation.
+ Changes the CSS media type of the page. The only allowed values are `'Screen'`, `'Print'` and `'Null'`.
+ Passing `'Null'` disables CSS media emulation.
+ 
++### option: Page.emulateMedia.media
++* since: v1.9
++* langs: go
++- `media` <[Media]<"screen"|"print"|"no-override">>
++
++Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `'no-override'`.
++Passing `'no-override'` disables CSS media emulation.
++
+ ### option: Page.emulateMedia.colorScheme
+ * since: v1.9
+ * langs: js, java
+@@ -1286,6 +1298,14 @@ Emulates [prefers-colors-scheme](https://developer.mozilla.org/en-US/docs/Web/CS
+ Emulates [prefers-colors-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) media feature, supported values are `'light'` and `'dark'`. Passing
+ `'Null'` disables color scheme emulation. `'no-preference'` is deprecated.
+ 
++### option: Page.emulateMedia.colorScheme
++* since: v1.9
++* langs: go
++- `colorScheme` <[ColorScheme]<"light"|"dark"|"no-preference"|"no-override">>
++
++Emulates [prefers-colors-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) media feature, supported values are `'light'` and `'dark'`. Passing
++`'no-override'` disables color scheme emulation. `'no-preference'` is deprecated.
++
+ ### option: Page.emulateMedia.reducedMotion
+ * since: v1.12
+ * langs: js, java
+@@ -1300,6 +1320,13 @@ Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce
+ 
+ Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce'`, `'no-preference'`. Passing `null` disables reduced motion emulation.
+ 
++### option: Page.emulateMedia.reducedMotion
++* since: v1.12
++* langs: go
++- `reducedMotion` <[ReducedMotion]<"reduce"|"no-preference"|"no-override">>
++
++Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce'`, `'no-preference'`. Passing `no-override` disables reduced motion emulation.
++
+ ### option: Page.emulateMedia.forcedColors
+ * since: v1.15
+ * langs: js, java
+@@ -1312,6 +1339,13 @@ Emulates `'forced-colors'` media feature, supported values are `'active'` and `'
+ * langs: csharp, python
+ - `forcedColors` <[ForcedColors]<"active"|"none"|"null">>
+ 
++### option: Page.emulateMedia.forcedColors
++* since: v1.15
++* langs: go
++- `forcedColors` <[ForcedColors]<"active"|"none"|"no-override">>
++
++Emulates `'forced-colors'` media feature, supported values are `'active'` and `'none'`. Passing `no-override` disables forced colors emulation.
++
+ ### option: Page.emulateMedia.contrast
+ * since: v1.51
+ * langs: js, java
+@@ -1324,6 +1358,13 @@ Emulates `'prefers-contrast'` media feature, supported values are `'no-preferenc
+ * langs: csharp, python
+ - `contrast` <[Contrast]<"no-preference"|"more"|"null">>
+ 
++### option: Page.emulateMedia.contrast
++* since: v1.51
++* langs: go
++- `contrast` <[Contrast]<"no-preference"|"more"|"no-override">>
++
++Emulates `'prefers-contrast'` media feature, supported values are `'no-preference'`, `'more'`. Passing `no-override` disables contrast emulation.
++
+ ## async method: Page.evalOnSelector
+ * since: v1.9
+ * discouraged: This method does not wait for the element to pass actionability
+@@ -2139,14 +2180,14 @@ Frame name specified in the `iframe`'s `name` attribute.
+ 
+ ### option: Page.frame.name
+ * since: v1.8
+-* langs: python
++* langs: python, go
+ - `name` ?<[string]>
+ 
+ Frame name specified in the `iframe`'s `name` attribute. Optional.
+ 
+ ### option: Page.frame.url
+ * since: v1.8
+-* langs: python
++* langs: python, go
+ - `url` ?<[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ A glob pattern, regex pattern or predicate receiving frame's `url` as a [URL] object. Optional.
+@@ -2740,7 +2781,7 @@ Returns up to (currently) 200 last page errors from this page. See [`event: Page
+ 
+ ## async method: Page.pageErrors
+ * since: v1.56
+-* langs: csharp, java
++* langs: csharp, java, go
+ - returns: <[Array]<[string]>>
+ 
+ Returns up to (currently) 200 last page errors from this page. See [`event: Page.pageError`] for more details.
+@@ -2994,7 +3035,7 @@ Paper width, accepts values labeled with units.
+ 
+ ### option: Page.pdf.width
+ * since: v1.8
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `width` <[string]>
+ 
+ Paper width, accepts values labeled with units.
+@@ -3008,7 +3049,7 @@ Paper height, accepts values labeled with units.
+ 
+ ### option: Page.pdf.height
+ * since: v1.8
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `height` <[string]>
+ 
+ Paper height, accepts values labeled with units.
+@@ -3026,7 +3067,7 @@ Paper margins, defaults to none.
+ 
+ ### option: Page.pdf.margin
+ * since: v1.8
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `margin` <[Object]>
+   * alias-java: Margin
+   - `top` ?<[string]> Top margin, accepts values labeled with units. Defaults to `0`.
+@@ -3058,6 +3099,7 @@ Whether or not to embed the document outline into the PDF. Defaults to `false`.
+ 
+ ## async method: Page.pickLocator
+ * since: v1.59
++* langs: js
+ - returns: <[Locator]>
+ 
+ Enters pick locator mode where hovering over page elements highlights them and shows the corresponding locator.
+@@ -3493,7 +3535,7 @@ Function that should be run once [`param: locator`] appears. This function shoul
+ Function that should be run once [`param: locator`] appears. This function should get rid of the element that blocks actions like click.
+ 
+ ### param: Page.addLocatorHandler.handler
+-* langs: java
++* langs: java, go
+ * since: v1.42
+ - `handler` <[function]\([Locator]\)>
+ 
+@@ -3738,7 +3780,7 @@ A glob pattern, regex pattern, URL pattern, or predicate that receives a [URL] t
+ 
+ ### param: Page.route.url
+ * since: v1.8
+-* langs: python, csharp, java
++* langs: python, csharp, java, go
+ - `url` <[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ A glob pattern, regex pattern, or predicate that receives a [URL] to match during routing. If [`option: Browser.newContext.baseURL`] is set in the context options and the provided URL is a string that does not start with `*`, it is resolved using the [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+@@ -3750,6 +3792,13 @@ A glob pattern, regex pattern, or predicate that receives a [URL] to match durin
+ 
+ handler function to route the request.
+ 
++### param: Page.route.handler
++* since: v1.8
++* langs: go
++- `handler` <[function]\([Route]\)>
++
++handler function to route the request.
++
+ ### param: Page.route.handler
+ * since: v1.8
+ * langs: csharp, java
+@@ -3878,7 +3927,7 @@ Only WebSockets with the url matching this pattern will be routed. A string patt
+ 
+ ### param: Page.routeWebSocket.url
+ * since: v1.48
+-* langs: python, csharp, java
++* langs: python, csharp, java, go
+ - `url` <[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ Only WebSockets with the url matching this pattern will be routed. A string pattern can be relative to the [`option: Browser.newContext.baseURL`] context option.
+@@ -3892,7 +3941,7 @@ Handler function to route the WebSocket.
+ 
+ ### param: Page.routeWebSocket.handler
+ * since: v1.48
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `handler` <[function]\([WebSocketRoute]\)>
+ 
+ Handler function to route the WebSocket.
+@@ -4239,14 +4288,14 @@ await page.GotoAsync("https://www.microsoft.com");
+ 
+ ### param: Page.setViewportSize.width
+ * since: v1.10
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `width` <[int]>
+ 
+ Page width in pixels.
+ 
+ ### param: Page.setViewportSize.height
+ * since: v1.10
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `height` <[int]>
+ 
+ Page height in pixels.
+@@ -4461,7 +4510,7 @@ A glob pattern, regex pattern, URL pattern, or predicate receiving [URL] to matc
+ 
+ ### param: Page.unroute.url
+ * since: v1.8
+-* langs: python, csharp, java
++* langs: python, csharp, java, go
+ - `url` <[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ A glob pattern, regex pattern, or predicate receiving [URL] to match while routing.
+@@ -4473,6 +4522,13 @@ A glob pattern, regex pattern, or predicate receiving [URL] to match while routi
+ 
+ Optional handler function to route the request.
+ 
++### param: Page.unroute.handler
++* since: v1.8
++* langs: go
++- `handler` ?<[function]\([Route]\)>
++
++Optional handler function to route the request.
++
+ ### param: Page.unroute.handler
+ * since: v1.8
+ * langs: csharp, java
+@@ -4513,7 +4569,8 @@ Performs action and waits for the Page to close.
+ 
+ ## async method: Page.waitForConsoleMessage
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectConsoleMessage
+   - alias-python: expect_console_message
+   - alias-csharp: RunAndWaitForConsoleMessage
+ - returns: <[ConsoleMessage]>
+@@ -4544,7 +4601,8 @@ Receives the [ConsoleMessage] object and resolves to truthy value when the waiti
+ 
+ ## async method: Page.waitForDownload
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectDownload
+   - alias-python: expect_download
+   - alias-csharp: RunAndWaitForDownload
+ - returns: <[Download]>
+@@ -4575,7 +4633,8 @@ Receives the [Download] object and resolves to truthy value when the waiting sho
+ 
+ ## async method: Page.waitForEvent
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
++  - alias-go: ExpectEvent
+   - alias-python: expect_event
+ - returns: <[any]>
+ 
+@@ -4628,7 +4687,8 @@ Either a predicate that receives an event or an options object. Optional.
+ 
+ ## async method: Page.waitForFileChooser
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectFileChooser
+   - alias-python: expect_file_chooser
+   - alias-csharp: RunAndWaitForFileChooser
+ - returns: <[FileChooser]>
+@@ -4786,7 +4846,7 @@ await page.WaitForFunctionAsync("selector => !!document.querySelector(selector)"
+ 
+ Optional argument to pass to [`param: expression`].
+ 
+-### option: Page.waitForFunction.polling = %%-js-python-wait-for-function-polling-%%
++### option: Page.waitForFunction.polling = %%-js-python-go-wait-for-function-polling-%%
+ * since: v1.8
+ 
+ ### option: Page.waitForFunction.polling = %%-csharp-java-wait-for-function-polling-%%
+@@ -4883,6 +4943,11 @@ Console.WriteLine(await popup.TitleAsync()); // popup is ready to use.
+ ```
+ 
+ ### param: Page.waitForLoadState.state = %%-wait-for-load-state-state-%%
++* langs: js, python, csharp, java
++* since: v1.8
++
++### option: Page.waitForLoadState.state = %%-wait-for-load-state-state-%%
++* langs: go
+ * since: v1.8
+ 
+ ### option: Page.waitForLoadState.timeout = %%-navigation-timeout-%%
+@@ -4895,6 +4960,7 @@ Console.WriteLine(await popup.TitleAsync()); // popup is ready to use.
+ * since: v1.8
+ * deprecated: This method is inherently racy, please use [`method: Page.waitForURL`] instead.
+ * langs:
++  * alias-go: ExpectNavigation
+   * alias-python: expect_navigation
+   * alias-csharp: RunAndWaitForNavigation
+ - returns: <[null]|[Response]>
+@@ -4982,7 +5048,8 @@ a navigation.
+ 
+ ## async method: Page.waitForPopup
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectPopup
+   - alias-python: expect_popup
+   - alias-csharp: RunAndWaitForPopup
+ - returns: <[Page]>
+@@ -5014,6 +5081,7 @@ Receives the [Page] object and resolves to truthy value when the waiting should
+ ## async method: Page.waitForRequest
+ * since: v1.8
+ * langs:
++  * alias-go: ExpectRequest
+   * alias-python: expect_request
+   * alias-csharp: RunAndWaitForRequest
+ - returns: <[Request]>
+@@ -5121,7 +5189,8 @@ changed by using the [`method: Page.setDefaultTimeout`] method.
+ 
+ ## async method: Page.waitForRequestFinished
+ * since: v1.12
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectRequestFinished
+   - alias-python: expect_request_finished
+   - alias-csharp: RunAndWaitForRequestFinished
+ - returns: <[Request]>
+@@ -5153,6 +5222,7 @@ Receives the [Request] object and resolves to truthy value when the waiting shou
+ ## async method: Page.waitForResponse
+ * since: v1.8
+ * langs:
++  * alias-go: ExpectResponse
+   * alias-python: expect_response
+   * alias-csharp: RunAndWaitForResponse
+ - returns: <[Response]>
+@@ -5519,7 +5589,8 @@ await page.WaitForURLAsync("**/target.html");
+ 
+ ## async method: Page.waitForWebSocket
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectWebSocket
+   - alias-python: expect_websocket
+   - alias-csharp: RunAndWaitForWebSocket
+ - returns: <[WebSocket]>
+@@ -5550,7 +5621,8 @@ Receives the [WebSocket] object and resolves to truthy value when the waiting sh
+ 
+ ## async method: Page.waitForWorker
+ * since: v1.9
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
++  - alias-go: ExpectWorker
+   - alias-python: expect_worker
+   - alias-csharp: RunAndWaitForWorker
+ - returns: <[Worker]>
+@@ -5592,7 +5664,8 @@ This does not contain ServiceWorkers
+ 
+ ## async method: Page.waitForEvent2
+ * since: v1.8
+-* langs: python
++* langs: python, go
++  - alias-go: WaitForEvent
+   - alias-python: wait_for_event
+ - returns: <[any]>
+ 
+diff --git a/docs/src/api/class-pageassertions.md b/docs/src/api/class-pageassertions.md
+index ce5de2f09..fee049b7b 100644
+--- a/docs/src/api/class-pageassertions.md
++++ b/docs/src/api/class-pageassertions.md
+@@ -69,7 +69,7 @@ public class ExampleTests : PageTest
+ 
+ ## property: PageAssertions.not
+ * since: v1.20
+-* langs: java, js, csharp
++* langs: java, js, csharp, go
+ - returns: <[PageAssertions]>
+ 
+ Makes the assertion check for the opposite condition.
+@@ -449,7 +449,7 @@ When [`option: Browser.newContext.baseURL`] is provided via the context options
+ 
+ ### param: PageAssertions.toHaveURL.urlOrRegExp
+ * since: v1.18
+-* langs: csharp, python, java
++* langs: csharp, python, java, go
+ - `urlOrRegExp` <[string]|[RegExp]>
+ 
+ Expected URL string or RegExp.
+diff --git a/docs/src/api/class-playwrightassertions.md b/docs/src/api/class-playwrightassertions.md
+index aa4e0a42a..2b822104e 100644
+--- a/docs/src/api/class-playwrightassertions.md
++++ b/docs/src/api/class-playwrightassertions.md
+@@ -1,5 +1,5 @@
+ # class: PlaywrightAssertions
+-* langs: js, java, csharp
++* langs: js, java, csharp, go
+ * since: v1.17
+ 
+ Playwright gives you Web-First Assertions with convenience methods for creating assertions that will wait and retry until the expected condition is met.
+@@ -79,6 +79,7 @@ By default, the timeout for assertions is set to 5 seconds.
+   - alias-python: expect
+   - alias-js: expect
+   - alias-csharp: Expect
++  - alias-go: APIResponse
+ - returns: <[APIResponseAssertions]>
+ 
+ Creates a [APIResponseAssertions] object for the given [APIResponse].
+@@ -117,6 +118,7 @@ Value that will be asserted.
+   - alias-python: expect
+   - alias-js: expect
+   - alias-csharp: Expect
++  - alias-go: Locator
+ - returns: <[LocatorAssertions]>
+ 
+ Creates a [LocatorAssertions] object for the given [Locator].
+@@ -144,6 +146,7 @@ await Expect(locator).ToBeVisibleAsync();
+   - alias-python: expect
+   - alias-js: expect
+   - alias-csharp: Expect
++  - alias-go: Page
+ - returns: <[PageAssertions]>
+ 
+ Creates a [PageAssertions] object for the given [Page].
+diff --git a/docs/src/api/class-request.md b/docs/src/api/class-request.md
+index a37a5d595..9e091dd83 100644
+--- a/docs/src/api/class-request.md
++++ b/docs/src/api/class-request.md
+@@ -128,6 +128,13 @@ Headers with multiple entries, such as `Set-Cookie`, appear in the array multipl
+ 
+ Returns the value of the header matching the name. The name is case-insensitive.
+ 
++## async method: Request.headerValue
++* since: v1.15
++* langs: go
++- returns: <[string]>
++
++Returns the value of the header matching the name. The name is case insensitive.
++
+ ### param: Request.headerValue.name
+ * since: v1.15
+ - `name` <[string]>
+@@ -163,7 +170,7 @@ Request's post body in a binary form, if any.
+ 
+ ## method: Request.postDataJSON
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
+ - returns: <[null]|[Serializable]>
+ 
+ Returns parsed request's body for `form-urlencoded` and JSON as a fallback if any.
+diff --git a/docs/src/api/class-response.md b/docs/src/api/class-response.md
+index 555d2210c..4e7ecef57 100644
+--- a/docs/src/api/class-response.md
++++ b/docs/src/api/class-response.md
+@@ -23,7 +23,7 @@ Waits for this response to finish, returns always `null`.
+ 
+ ## async method: Response.finished
+ * since: v1.8
+-* langs: js
++* langs: js, go
+ - returns: <[null]|[Error]>
+ 
+ ## method: Response.frame
+@@ -64,6 +64,14 @@ Headers with multiple entries, such as `Set-Cookie`, appear in the array multipl
+ Returns the value of the header matching the name. The name is case-insensitive. If multiple headers have
+ the same name (except `set-cookie`), they are returned as a list separated by `, `. For `set-cookie`, the `\n` separator is used. If no headers are found, `null` is returned.
+ 
++## async method: Response.headerValue
++* since: v1.15
++* langs: go
++- returns: <[string]>
++
++Returns the value of the header matching the name. The name is case insensitive. If multiple headers have
++the same name (except `set-cookie`), they are returned as a list separated by `, `. For `set-cookie`, the `\n` separator is used. If no headers are found, "" is returned.
++
+ ### param: Response.headerValue.name
+ * since: v1.15
+ - `name` <[string]>
+@@ -90,7 +98,7 @@ Returns the http version used by the response.
+ 
+ ## async method: Response.json
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
+ - returns: <[Serializable]>
+ 
+ Returns the JSON representation of response body.
+diff --git a/docs/src/api/class-route.md b/docs/src/api/class-route.md
+index 5bbe4b3f8..b7c9624c1 100644
+--- a/docs/src/api/class-route.md
++++ b/docs/src/api/class-route.md
+@@ -134,7 +134,7 @@ If set changes the post data of request.
+ 
+ ### option: Route.continue.postData
+ * since: v1.8
+-* langs: java
++* langs: java, go
+ - `postData` <[string]|[Buffer]>
+ 
+ If set changes the post data of request.
+@@ -421,7 +421,7 @@ If set changes the post data of request.
+ 
+ ### option: Route.fallback.postData
+ * since: v1.23
+-* langs: java
++* langs: java, go
+ - `postData` <[string]|[Buffer]>
+ 
+ If set changes the post data of request.
+@@ -544,7 +544,7 @@ and `content-type` header will be set to `application/json` if not explicitly se
+ set to `application/octet-stream` if not explicitly set.
+ 
+ ### option: Route.fetch.postData
+-* langs: java
++* langs: java, go
+ * since: v1.29
+ - `postData` <[string]|[Buffer]>
+ 
+@@ -657,7 +657,7 @@ If set, equals to setting `Content-Type` response header.
+ 
+ ### option: Route.fulfill.body
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
+ - `body` <[string]|[Buffer]>
+ 
+ Response body.
+diff --git a/docs/src/api/class-selectors.md b/docs/src/api/class-selectors.md
+index fefd7ba39..1a2541a5c 100644
+--- a/docs/src/api/class-selectors.md
++++ b/docs/src/api/class-selectors.md
+@@ -187,7 +187,7 @@ contain `[a-zA-Z0-9_]` characters.
+ 
+ ### param: Selectors.register.script
+ * since: v1.8
+-* langs: js
++* langs: js, go
+ - `script` <[function]|[string]|[Object]>
+   - `path` ?<[path]> Path to the JavaScript file. If `path` is a relative path, then it is resolved relative to the
+     current working directory. Optional.
+diff --git a/docs/src/api/class-tracing.md b/docs/src/api/class-tracing.md
+index 256ae513a..f65ebbe13 100644
+--- a/docs/src/api/class-tracing.md
++++ b/docs/src/api/class-tracing.md
+@@ -156,7 +156,7 @@ If this option is true tracing will
+ 
+ ### option: Tracing.start.sources
+ * since: v1.17
+-* langs: js, csharp, python
++* langs: js, csharp, python, go
+ - `sources` <[boolean]>
+ 
+ Whether to include source files for trace actions.
+@@ -374,7 +374,7 @@ A glob or regex pattern to filter requests that are stored in the HAR. Defaults
+ 
+ ### option: Tracing.startHar.resourcesDir
+ * since: v1.60
+-* langs: js
++* langs: js, go
+ - `resourcesDir` <[path]>
+ 
+ Only used together with `content: 'attach'`. When set, response bodies are placed in this directory instead of next to
+diff --git a/docs/src/api/class-websocket.md b/docs/src/api/class-websocket.md
+index e33740eac..d89648d91 100644
+--- a/docs/src/api/class-websocket.md
++++ b/docs/src/api/class-websocket.md
+@@ -18,6 +18,13 @@ Fired when the websocket closes.
+ 
+ Fired when the websocket receives a frame.
+ 
++## event: WebSocket.frameReceived
++* since: v1.9
++* langs: go
++- argument: <[Buffer]> frame payload
++
++Fired when the websocket receives a frame.
++
+ ## event: WebSocket.frameReceived
+ * since: v1.9
+ * langs: python
+@@ -35,6 +42,13 @@ Fired when the websocket receives a frame.
+ 
+ Fired when the websocket sends a frame.
+ 
++## event: WebSocket.frameSent
++* since: v1.9
++* langs: go
++- argument: <[Buffer]> frame payload
++
++Fired when the websocket sends a frame.
++
+ ## event: WebSocket.frameSent
+ * since: v1.9
+ * langs: python
+@@ -65,7 +79,8 @@ Contains the URL of the WebSocket.
+ 
+ ## async method: WebSocket.waitForEvent
+ * since: v1.8
+-* langs: js, python
++* langs: js, python, go
++  - alias-go: ExpectEvent
+   - alias-python: expect_event
+ - returns: <[any]>
+ 
+@@ -142,7 +157,8 @@ Receives the [WebSocketFrame] object and resolves to truthy value when the waiti
+ 
+ ## async method: WebSocket.waitForEvent2
+ * since: v1.8
+-* langs: python
++* langs: python, go
++  - alias-go: WaitForEvent
+   - alias-python: wait_for_event
+ - returns: <[any]>
+ 
+diff --git a/docs/src/api/class-websocketroute.md b/docs/src/api/class-websocketroute.md
+index c4c8dfc0b..f04bca717 100644
+--- a/docs/src/api/class-websocketroute.md
++++ b/docs/src/api/class-websocketroute.md
+@@ -325,7 +325,7 @@ Function that will handle WebSocket closure. Received an optional [close code](h
+ 
+ ### param: WebSocketRoute.onClose.handler
+ * since: v1.48
+-* langs: java
++* langs: java, go
+ - `handler` <[function]\([null]|[int], [null]|[string]\)>
+ 
+ Function that will handle WebSocket closure. Received an optional [close code](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close#code) and an optional [close reason](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close#reason).
+@@ -355,6 +355,13 @@ Calling this method again will override the handler with a new one.
+ 
+ Function that will handle messages.
+ 
++### param: WebSocketRoute.onMessage.handler
++* since: v1.48
++* langs: go
++- `handler` <[function]\([string]|[Buffer]\)>
++
++Function that will handle messages.
++
+ ### param: WebSocketRoute.onMessage.handler
+ * since: v1.48
+ * langs: csharp, java
+diff --git a/docs/src/api/params.md b/docs/src/api/params.md
+index 118b38b28..cb8a6b818 100644
+--- a/docs/src/api/params.md
++++ b/docs/src/api/params.md
+@@ -8,7 +8,7 @@ When to consider operation succeeded, defaults to `load`. Events can be either:
+ * `'commit'` - consider operation to be finished when network response is received and the document started loading.
+ 
+ ## navigation-timeout
+-* langs: python, java, csharp
++* langs: python, java, csharp, go
+ - `timeout` <[float]>
+ 
+ Maximum operation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+@@ -28,7 +28,7 @@ Maximum operation time in milliseconds. Defaults to `0` - no timeout. The defaul
+ [`method: Page.setDefaultTimeout`] methods.
+ 
+ ## wait-for-function-timeout
+-* langs: python, java, csharp
++* langs: python, java, csharp, go
+ - `timeout` <[float]>
+ 
+ Maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default
+@@ -47,7 +47,7 @@ When true, the call requires selector to resolve to a single element. If given s
+ than one element, the call throws an exception.
+ 
+ ## input-timeout
+-* langs: python, java, csharp
++* langs: python, java, csharp, go
+ - `timeout` <[float]>
+ 
+ Maximum time in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by
+@@ -216,8 +216,8 @@ Defaults to `'visible'`. Can be either:
+ * `'hidden'` - wait for element to be either detached from DOM, or have an empty bounding box or `visibility:hidden`.
+   This is opposite to the `'visible'` option.
+ 
+-## js-python-wait-for-function-polling
+-* langs: js, python
++## js-python-go-wait-for-function-polling
++* langs: js, python, go
+ - `polling` <[float]|"raf">
+ 
+ If [`option: polling`] is `'raf'`, then [`param: expression`] is constantly executed in `requestAnimationFrame`
+@@ -238,14 +238,14 @@ If `true`, Playwright does not pass its own configurations args and only uses th
+ array is given, then filters out the given default arguments. Dangerous option; use with care. Defaults to `false`.
+ 
+ ## csharp-java-browser-option-ignoredefaultargs
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `ignoreDefaultArgs` <[Array]<[string]>>
+ 
+ If `true`, Playwright does not pass its own configurations args and only uses the ones from [`option: args`].
+ Dangerous option; use with care.
+ 
+ ## csharp-java-browser-option-ignorealldefaultargs
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `ignoreAllDefaultArgs` <[boolean]>
+ 
+ If `true`, Playwright does not pass its own configurations args and only uses the ones from [`option: args`].
+@@ -269,7 +269,7 @@ Network proxy settings.
+ - `env` <[Object]<[string], [string]|[undefined]>>
+ 
+ ## csharp-java-browser-option-env
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `env` <[Object]<[string], [string]>>
+ 
+ Specify environment variables that will be visible to the browser. Defaults to `process.env`.
+@@ -302,6 +302,30 @@ Learn more about [storage state and auth](../auth.md).
+ 
+ Populates context with given storage state. This option can be used to initialize context with logged-in information obtained via [`method: BrowserContext.storageState`].
+ 
++## go-context-option-storage-state
++* langs: go
++- `storageState` <[path]|[Object]>
++  - `cookies` <[Array]<[Object]>> Cookies to set for context
++    - `name` <[string]>
++    - `value` <[string]>
++    - `url` ?<[string]> Either url or domain / path are required. Optional.
++    - `domain` ?<[string]> For the cookie to apply to all subdomains as well, prefix domain with a dot, like this: ".example.com". Either url or domain / path are required. Optional.
++    - `path` ?<[string]> Either url or domain / path are required Optional.
++    - `expires` ?<[float]> Unix time in seconds. Optional.
++    - `httpOnly` ?<[boolean]> Optional.
++    - `secure` ?<[boolean]> Optional.
++    - `sameSite` ?<[SameSiteAttribute]<"Strict"|"Lax"|"None">> Optional.
++    - `partitionKey` ?<[string]> For partitioned third-party cookies (aka [CHIPS](https://developer.mozilla.org/en-US/docs/Web/Privacy/Guides/Privacy_sandbox/Partitioned_cookies)), the partition key. Optional.
++  - `origins` <[Array]<[Object]>> localStorage to set for context
++    - `origin` <[string]>
++    - `localStorage` <[Array]<[Object]>>
++      - `name` <[string]>
++      - `value` <[string]>
++
++Learn more about [storage state and auth](../auth.md).
++
++Populates context with given storage state. This option can be used to initialize context with logged-in information obtained via [`method: BrowserContext.storageState`].
++
+ ## csharp-java-context-option-storage-state
+ * langs: csharp, java
+ - `storageState` <[string]>
+@@ -310,7 +334,7 @@ Populates context with given storage state. This option can be used to initializ
+ obtained via [`method: BrowserContext.storageState`].
+ 
+ ## csharp-java-context-option-storage-state-path
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `storageStatePath` <[path]>
+ 
+ Populates context with given storage state. This option can be used to initialize context with logged-in information
+@@ -441,7 +465,7 @@ Query parameters to be sent with the URL.
+ Query parameters to be sent with the URL.
+ 
+ ## csharp-fetch-option-params
+-* langs: csharp
++* langs: csharp, go
+ - `params` <[Object]<[string], [Serializable]>>
+ 
+ Query parameters to be sent with the URL.
+@@ -459,19 +483,19 @@ Query parameters to be sent with the URL.
+ Optional request parameters.
+ 
+ ## js-python-csharp-fetch-option-headers
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `headers` <[Object]<[string], [string]>>
+ 
+ Allows to set HTTP headers. These headers will apply to the fetched request as well as any redirects initiated by it.
+ 
+ ## js-python-csharp-fetch-option-timeout
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `timeout` <[float]>
+ 
+ Request timeout in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+ 
+ ## js-python-csharp-fetch-option-failonstatuscode
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `failOnStatusCode` <[boolean]>
+ 
+ Whether to throw on response codes other than 2xx and 3xx. By default response object is returned
+@@ -503,6 +527,14 @@ unless explicitly provided.
+ 
+ An instance of [FormData] can be created via [`method: APIRequestContext.createFormData`].
+ 
++## go-fetch-option-form
++* langs: go
++- `form` <[any]>
++
++Provides an object that will be serialized as html form using `application/x-www-form-urlencoded` encoding and sent as
++this request body. If this parameter is specified `content-type` header will be set to `application/x-www-form-urlencoded`
++unless explicitly provided.
++
+ ## js-fetch-option-multipart
+ * langs: js
+ - `multipart` <[FormData]|[Object]<[string], [string]|[float]|[boolean]|[ReadStream]|[Object]>>
+@@ -537,6 +569,15 @@ unless explicitly provided. File values can be passed as file-like object contai
+ 
+ An instance of [FormData] can be created via [`method: APIRequestContext.createFormData`].
+ 
++## go-fetch-option-multipart
++* langs: go
++- `multipart` <[any]>
++
++Provides an object that will be serialized as html form using `multipart/form-data` encoding and sent as
++this request body. If this parameter is specified `content-type` header will be set to `multipart/form-data`
++unless explicitly provided. File values can be passed either as [`fs.ReadStream`](https://nodejs.org/api/fs.html#fs_class_fs_readstream)
++or as file-like object containing file name, mime-type and its content.
++
+ ## js-python-csharp-fetch-option-data
+ * langs: js, python, csharp
+ - `data` <[string]|[Buffer]|[Serializable]>
+@@ -545,21 +586,29 @@ Allows to set post data of the request. If the data parameter is an object, it w
+ and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type` header will be
+ set to `application/octet-stream` if not explicitly set.
+ 
++## go-fetch-option-data
++* langs: go
++- `data` <[any]>
++
++Allows to set post data of the request. If the data parameter is an object, it will be serialized to json string
++and `content-type` header will be set to `application/json` if not explicitly set. Otherwise the `content-type` header will be
++set to `application/octet-stream` if not explicitly set.
++
+ ## js-python-csharp-fetch-option-ignorehttpserrors
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `ignoreHTTPSErrors` <[boolean]>
+ 
+ Whether to ignore HTTPS errors when sending network requests. Defaults to `false`.
+ 
+ ## js-python-csharp-fetch-option-maxredirects
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `maxRedirects` <[int]>
+ 
+ Maximum number of request redirects that will be followed automatically. An error will be thrown if the number is exceeded.
+ Defaults to `20`. Pass `0` to not follow redirects.
+ 
+ ## js-python-csharp-fetch-option-maxretries
+-* langs: js, python, csharp
++* langs: js, python, csharp, go
+ - `maxRetries` <[int]>
+ 
+ Maximum number of times network errors should be retried. Currently only `ECONNRESET` error is retried. Does not retry based on HTTP response codes. An error will be thrown if the limit is exceeded. Defaults to `0` - no retries.
+@@ -601,7 +650,7 @@ Function to be evaluated in the worker context.
+ Function to be evaluated in the main Electron process.
+ 
+ ## python-context-option-viewport
+-* langs: python
++* langs: python, go
+ - `viewport` <[null]|[Object]>
+   - `width` <[int]> page width in pixels.
+   - `height` <[int]> page height in pixels.
+@@ -609,7 +658,7 @@ Function to be evaluated in the main Electron process.
+ Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `no_viewport` disables the fixed viewport. Learn more about [viewport emulation](../emulation.md#viewport).
+ 
+ ## python-context-option-no-viewport
+-* langs: python
++* langs: python, go
+ - `noViewport` <[boolean]>
+ 
+ Does not enforce fixed viewport, allows resizing window in the headed mode.
+@@ -722,6 +771,13 @@ Emulates [prefers-colors-scheme](https://developer.mozilla.org/en-US/docs/Web/CS
+ Emulates [prefers-colors-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) media feature, supported values are `'light'` and `'dark'`. See
+ [`method: Page.emulateMedia`] for more details. Passing `'null'` resets emulation to system defaults. Defaults to `'light'`.
+ 
++## context-option-colorscheme-go
++* langs: go
++- `colorScheme` <[ColorScheme]<"light"|"dark"|"no-preference"|"no-override">>
++
++Emulates [prefers-colors-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme) media feature, supported values are `'light'` and `'dark'`. See
++[`method: Page.emulateMedia`] for more details. Passing `'no-override'` resets emulation to system defaults. Defaults to `'light'`.
++
+ ## context-option-reducedMotion
+ * langs: js, java
+ - `reducedMotion` <null|[ReducedMotion]<"reduce"|"no-preference">>
+@@ -734,6 +790,12 @@ Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce
+ 
+ Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce'`, `'no-preference'`. See [`method: Page.emulateMedia`] for more details. Passing `'null'` resets emulation to system defaults. Defaults to `'no-preference'`.
+ 
++## context-option-reducedMotion-go
++* langs: go
++- `reducedMotion` <[ReducedMotion]<"reduce"|"no-preference"|"no-override">>
++
++Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce'`, `'no-preference'`. See [`method: Page.emulateMedia`] for more details. Passing `'no-override'` resets emulation to system defaults. Defaults to `'no-preference'`.
++
+ ## context-option-forcedColors
+ * langs: js, java
+ - `forcedColors` <null|[ForcedColors]<"active"|"none">>
+@@ -741,10 +803,10 @@ Emulates `'prefers-reduced-motion'` media feature, supported values are `'reduce
+ Emulates `'forced-colors'` media feature, supported values are `'active'`, `'none'`. See [`method: Page.emulateMedia`] for more details. Passing `null` resets emulation to system defaults. Defaults to `'none'`.
+ 
+ ## context-option-forcedColors-csharp-python
+-* langs: csharp, python
+-- `forcedColors` <[ForcedColors]<"active"|"none"|"null">>
++* langs: csharp, python, go
++- `forcedColors` <[ForcedColors]<"active"|"none"|"no-override">>
+ 
+-Emulates `'forced-colors'` media feature, supported values are `'active'`, `'none'`. See [`method: Page.emulateMedia`] for more details. Passing `'null'` resets emulation to system defaults. Defaults to `'none'`.
++Emulates `'forced-colors'` media feature, supported values are `'active'`, `'none'`. See [`method: Page.emulateMedia`] for more details. Passing `'no-override'` resets emulation to system defaults. Defaults to `'none'`.
+ 
+ ## context-option-contrast
+ * langs: js, java
+@@ -758,6 +820,12 @@ Emulates `'prefers-contrast'` media feature, supported values are `'no-preferenc
+ 
+ Emulates `'prefers-contrast'` media feature, supported values are `'no-preference'`, `'more'`. See [`method: Page.emulateMedia`] for more details. Passing `'null'` resets emulation to system defaults. Defaults to `'no-preference'`.
+ 
++## context-option-contrast-go
++* langs: go
++- `contrast` <[Contrast]<"no-preference"|"more"|"no-override">>
++
++Emulates `'prefers-contrast'` media feature, supported values are `'no-preference'`, `'more'`. See [`method: Page.emulateMedia`] for more details. Passing `'no-override'` resets emulation to system defaults. Defaults to `'no-preference'`.
++
+ ## context-option-logger
+ * langs: js
+ * deprecated: The logs received by the logger are incomplete. Please use tracing instead.
+@@ -780,7 +848,7 @@ specified, the HAR is not recorded. Make sure to await [`method: BrowserContext.
+ saved.
+ 
+ ## context-option-recordhar-path
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+   - alias-python: record_har_path
+ - `recordHarPath` <[path]>
+ 
+@@ -789,33 +857,33 @@ specified HAR file on the filesystem. If not specified, the HAR is not recorded.
+ call [`method: BrowserContext.close`] for the HAR to be saved.
+ 
+ ## context-option-recordhar-omit-content
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+   - alias-python: record_har_omit_content
+ - `recordHarOmitContent` ?<[boolean]>
+ 
+ Optional setting to control whether to omit request content from the HAR. Defaults to `false`.
+ 
+ ## context-option-recordhar-content
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+   - alias-python: record_har_content
+ - `recordHarContent` ?<[HarContentPolicy]<"omit"|"embed"|"attach">>
+ 
+ Optional setting to control resource content management. If `omit` is specified, content is not persisted. If `attach` is specified, resources are persisted as separate files and all of these files are archived along with the HAR file. Defaults to `embed`, which stores content inline the HAR file as per HAR specification.
+ 
+ ## context-option-recordhar-mode
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+   - alias-python: record_har_mode
+ - `recordHarMode` ?<[HarMode]<"full"|"minimal">>
+ 
+ When set to `minimal`, only record information necessary for routing from HAR. This omits sizes, timing, page, cookies, security and other types of HAR information that are not used when replaying from HAR. Defaults to `full`.
+ 
+ ## context-option-recordhar-url-filter
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+   - alias-python: record_har_url_filter
+ - `recordHarUrlFilter` ?<[string]|[RegExp]>
+ 
+ ## context-option-recordvideo
+-* langs: js
++* langs: js, go
+ - `recordVideo` <[Object]>
+   - `dir` ?<[path]> Path to the directory to put videos into. If not specified, the videos will be stored in `artifactsDir` (see [`method: BrowserType.launch`] options).
+   - `size` ?<[Object]> Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`
+@@ -888,7 +956,7 @@ Specifies whether to wait for already running listeners and what to do if they t
+ * `'ignoreErrors'` - do not wait for current listener calls (if any) to finish, all errors thrown by the listeners after removal are silently caught
+ 
+ ## unroute-all-options-behavior
+-* langs: js, csharp, python
++* langs: js, csharp, python, go
+ * since: v1.41
+ - `behavior` <[UnrouteBehavior]<"wait"|"ignoreErrors"|"default">>
+ 
+@@ -899,7 +967,7 @@ Specifies whether to wait for already running handlers and what to do if they th
+ 
+ 
+ ## select-options-values
+-* langs: java, js, csharp
++* langs: java, js, csharp, go
+ - `values` <[null]|[string]|[ElementHandle]|[Array]<[string]>|[Object]|[Array]<[ElementHandle]>|[Array]<[Object]>>
+   * alias-java: SelectOption
+   - `value` ?<[string]> Matches by `option.value`. Optional.
+@@ -919,7 +987,7 @@ the parameter is a string without wildcard characters, the method will wait for
+ equal to the string.
+ 
+ ## python-csharp-java-wait-for-navigation-url
+-* langs: python, csharp, java
++* langs: python, csharp, java, go
+ - `url` <[string]|[RegExp]|[function]\([URL]\):[boolean]>
+ 
+ A glob pattern, regex pattern, or predicate receiving [URL] to match while waiting for the navigation. Note that if
+@@ -927,7 +995,7 @@ the parameter is a string without wildcard characters, the method will wait for
+ equal to the string.
+ 
+ ## wait-for-event-event
+-* langs: js, python, java
++* langs: js, python, java, go
+ - `event` <[string]>
+ 
+ Event name, same one typically passed into `*.on(event)`.
+@@ -985,7 +1053,7 @@ only the first option matching one of the passed options is selected. Optional.
+ Receives the event data and resolves to truthy value when the waiting should resolve.
+ 
+ ## wait-for-event-timeout
+-* langs: csharp, java, python
++* langs: csharp, java, python, go
+ - `timeout` <[float]>
+ 
+ Maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+@@ -1005,7 +1073,7 @@ using the [`method: AndroidDevice.setDefaultTimeout`] method.
+ Time to retry the assertion for in milliseconds. Defaults to `timeout` in `TestConfig.expect`.
+ 
+ ## csharp-java-python-assertions-timeout
+-* langs: java, python, csharp
++* langs: java, python, csharp, go
+ - `timeout` <[float]>
+ 
+ Time to retry the assertion for in milliseconds. Defaults to `5000`.
+@@ -1059,12 +1127,15 @@ between the same pixel in compared images, between zero (strict) and one (lax),
+ - %%-context-option-httpcredentials-%%
+ - %%-context-option-colorscheme-%%
+ - %%-context-option-colorscheme-csharp-python-%%
++- %%-context-option-colorscheme-go-%%
+ - %%-context-option-reducedMotion-%%
+ - %%-context-option-reducedMotion-csharp-python-%%
++- %%-context-option-reducedMotion-go-%%
+ - %%-context-option-forcedColors-%%
+ - %%-context-option-forcedColors-csharp-python-%%
+ - %%-context-option-contrast-%%
+ - %%-context-option-contrast-csharp-python-%%
++- %%-context-option-contrast-go-%%
+ - %%-context-option-logger-%%
+ - %%-context-option-recordhar-%%
+ - %%-context-option-recordhar-path-%%
+@@ -1149,7 +1220,7 @@ Firefox user preferences. Learn more about the Firefox user preferences at
+ You can also provide a path to a custom [`policies.json` file](https://mozilla.github.io/policy-templates/) via `PLAYWRIGHT_FIREFOX_POLICIES_JSON` environment variable.
+ 
+ ## csharp-java-browser-option-firefoxuserprefs
+-* langs: csharp, java
++* langs: csharp, java, go
+ - `firefoxUserPrefs` <[Object]<[string], [any]>>
+ 
+ Firefox user preferences. Learn more about the Firefox user preferences at
+diff --git a/utils/doclint/generateGoApi.js b/utils/doclint/generateGoApi.js
+new file mode 100644
+index 000000000..0718831f4
+--- /dev/null
++++ b/utils/doclint/generateGoApi.js
+@@ -0,0 +1,891 @@
++/**
++ * Copyright (c) Microsoft Corporation.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++// @ts-check
++
++const path = require('path');
++const Documentation = require('./documentation');
++const PROJECT_DIR = path.join(__dirname, '..', '..');
++const fs = require('fs');
++const { parseApi } = require('./api_parser');
++const { Type } = require('./documentation');
++const { EOL } = require('os');
++
++const maxDocumentationColumnWidth = 80;
++Error.stackTraceLimit = 100;
++
++/** @type {Map<string, Documentation.Type>} */
++const additionalTypes = new Map(); // this will hold types that use structs
++/** @type {Map<string, string>} */
++const documentedResults = new Map(); // will hold documentation for new types
++/** @type {Map<string, string[]>} */
++const enumTypes = new Map();
++
++
++const typesDir = process.argv[2] || path.join(__dirname, 'generate_types', 'go');
++if (!fs.existsSync(typesDir))
++  fs.mkdirSync(typesDir, { recursive: true });
++
++const interfacesFile = path.join(typesDir, "generated-interfaces.go");
++const structsFile = path.join(typesDir, "generated-structs.go");
++const enumsFile = path.join(typesDir, "generated-enums.go");
++
++for (const file of [interfacesFile, structsFile, enumsFile])
++  fs.writeFileSync(file, "package playwright\n")
++
++const documentation = parseApi(path.join(PROJECT_DIR, 'docs', 'src', 'api'));
++documentation.filterForLanguage('go');
++
++documentation.setLinkRenderer(item => {
++  if (item.clazz)
++    return `[${toTitleCase(item.clazz.name)}]`;
++  else if (item.option || item.param)
++    return `“${item.option || item.param}”`
++  else if (item.member) {
++    return `[${toTitleCase(item.member.clazz ? item.member.clazz.name : '')}.${toMemberName(item.member)}]`;
++  }
++  else
++    throw new Error('Unknown link format.');
++});
++documentation.generateSourceCodeComments();
++
++// we have some "predefined" types, like the mixed state enum, that we can map in advance
++enumTypes.set("MixedState", ["On", "Off", "Mixed"]);
++
++// map the name to a golang friendly one
++const classNameMap = new Map(documentation.classesArray.map(x => [x.name, toTitleCase(x.name)]));
++
++// map some types that we know of
++classNameMap.set('EvaluationArgument', 'any');
++// classNameMap.set('any', 'interface{}');
++classNameMap.set('Buffer', '[]byte'); // TODO(mxschmitt): use bytes.Buffer
++classNameMap.set('RegExp', 'Regex');
++
++// method that don't return error
++const methodNoErrArray = [
++  'APIResponse',
++  'Args',
++  'AsElement',
++  'BackgroundPages',
++  'Browser',
++  'BrowserType',
++  'ChildFrames',
++  'Clock',
++  'Context',
++  'Contexts',
++  'Credentials',
++  'DefaultValue',
++  'Element',
++  'Error',
++  'ExecutablePath',
++  'Frame',
++  'Frames',
++  'FromServiceWorker',
++  'Headers',
++  'IsClosed',
++  'IsConnected',
++  'IsDetached',
++  'IsMultiple',
++  'IsNavigationRequest',
++  'Keyboard',
++  'LocalStorage',
++  'Location',
++  'Locator',
++  'MainFrame',
++  'Message',
++  'Method',
++  'Mouse',
++  'Name',
++  'Not',
++  'Ok',
++  'OnClose',
++  'OnMessage',
++  'Page',
++  'Pages',
++  'ParentFrame',
++  'RedirectedFrom',
++  'RedirectedTo',
++  'Request',
++  'ResourceType',
++  'ServiceWorkers',
++  'SessionStorage',
++  'SetDefaultNavigationTimeout',
++  'SetDefaultTimeout',
++  'SetTestIdAttribute',
++  'Status',
++  'StatusText',
++  'String',
++  'SuggestedFilename',
++  'Timing',
++  'Touchscreen',
++  'Tracing',
++  'URL',
++  'Version',
++  'Video',
++  'ViewportSize',
++  'WaitForTimeout',
++  'Workers',
++];
++const methodNoErr = new Set(methodNoErrArray);
++
++// this are types that we don't explicility render even if we get the specs
++const ignoredTypes = [
++  'Playwright',
++  'TimeoutError',
++  'Error',
++];
++
++/**
++ * @param {string} file
++ * @param {string[]} data
++ */
++let appendFile = (file, data) => {
++  let content = data.join(`${EOL}\t`);
++  fs.appendFileSync(file, content);
++}
++
++// generate the interfaces
++for (const element of documentation.classesArray) {
++  const name = classNameMap.get(element.name);
++  if (!name)
++    continue;
++  if (ignoredTypes.includes(name))
++    continue;
++
++  /** @type {string[]} */
++  const out = [];
++  console.log(`Generating ${name}`);
++
++  if (element.comment)
++    out.push(...transformComment(element));
++
++  out.push(`type ${name} interface {`);
++  if (['Browser', 'BrowserContext', 'CDPSession', 'Page'].includes(name))  // v1.47
++    out.push('EventEmitter');
++  if (element.extends)
++    out.push(element.extends)
++
++  for (const member of element.membersArray) {
++    renderInterface(member, element, out);
++    // we want to separate the items with a space and this is nicer, than holding
++    // an index in each iterator down the line
++    const lastLine = out.pop();
++    if (lastLine !== '')
++      out.push(lastLine ? `${lastLine}\n` : '');
++  }
++  if (name && ['Download', 'JSHandle'].includes(name))
++    out.push('String() string\n');
++  if (name === 'Locator')
++    out.push('Err() error\n');
++
++  out.push('}\n\n');
++
++  appendFile(interfacesFile, out);
++}
++
++additionalTypes.forEach((type, name) => {
++  if (!type.properties?.length) {
++    console.log(type);
++    throw new Error(`Not sure what to do in this case.`);
++  }
++  if (ignoredTypes.includes(name) || !type.properties?.length)
++    return
++  const out = []
++  let ownDocumentation = documentedResults.get(name);
++  if (ownDocumentation)
++    out.push(`// ${ownDocumentation}`)
++  out.push(`type ${name} struct {`)
++
++  for (const member of type.properties) {
++    let fakeType = new Type(name, undefined);
++    renderMember(member, fakeType, out, name.endsWith('Options'));
++  }
++
++  out.push("}\n\n")
++  appendFile(structsFile, out);
++});
++
++enumTypes.forEach((values, name) => {
++  const out = []
++  const fcall = `get${name}`
++  out.push(`func ${fcall}(in string) *${name} {
++      v := ${name}(in)
++      return &v
++    }
++    `)
++
++  out.push(`type ${name} string`)
++  out.push(" var (")
++  values.forEach((v, i) => {
++    // strip out the quotes
++    v = v.replace(/[\"]/g, ``)
++    let escapedEnumValue = v.replace(/[-]/g, ' ')
++      .split(' ')
++      .map(word => word[0].toUpperCase() + word.substring(1)).join('');
++
++    if (i === 0)
++      out.push(`${name}${escapedEnumValue} *${name} = ${fcall}("${v}")`)
++    else
++      out.push(`${name}${escapedEnumValue} = ${fcall}("${v}")`)
++  });
++  out.push(")\n")
++
++  appendFile(enumsFile, out);
++});
++
++/**
++ * @param {string} name
++ */
++function toArgumentName(name) {
++  return `${name === 'type' ? 'typ' : name}`;
++}
++
++/**
++* @param {Documentation.Member} member
++*/
++function toMemberName(member) {
++  let assumedName = toTitleCase(member.alias || member.name);
++  if (member.kind === 'event')
++    return `On${assumedName}`;
++  // we sanitize some common abbreviations to ensure consistency
++  if (member.kind !== 'method')
++    assumedName = assumedName.replace(/(HTTP[S]?)/g, (m, g) => {
++      return g[0].toUpperCase() + g.substring(1).toLowerCase();
++    });
++  assumedName = assumedName.replace(/(json|url)/gi, (m, g) => {
++    return g.toUpperCase();
++  });
++  if (assumedName.toLowerCase() === "pdf")
++    return "PDF"
++  if (member.kind === 'interface') {
++    // apply name mapping if the map exists
++    let mappedName = classNameMap.get(assumedName);
++    return mappedName ? `${mappedName}` : `${assumedName}`;
++  }
++  return `${assumedName}`;
++}
++
++/**
++ *
++ * @param {Documentation.Member} member
++ * @param {Documentation.Class|Documentation.Type} parent
++ * @param {string[]} out
++ * @param {boolean} isOptional
++ */
++function renderMember(member, parent, out, isOptional = false) {
++  let output = (/** @type {string | string[]} */ line) => {
++    if (typeof (line) === 'string')
++      out.push(`\t${line}`);
++    else
++      out.push(...line.map(x => `\t${x}`));
++  }
++
++  const name = toMemberName(member);
++  if (member.kind === 'method' || member.kind === 'event') {
++    return;
++  }
++
++  let type = translateType(member.type, parent, t => generateNameDefault(member, name, t, parent), !member.required || isOptional, false);
++
++  if ((additionalTypes.has(type) || enumTypes.has(type)) && !classNameMap.has(type)) {
++    type = `${type}`.replace(/^\*?/, '*');
++  }
++
++  if (member.kind === 'property') {
++    output(transformComment(member));
++    output(`${name} ${type} \`json:"${member.name}"\``);
++    return;
++  }
++  throw new Error(`Problem rendering a member: ${type} - ${name} (${member.kind})`);
++}
++
++/**
++ *
++ * @param {Documentation.Member} member
++ * @param {string} name
++ * @param {Documentation.Type} t
++ * @param {*} parent
++ */
++function generateNameDefault(member, name, t, parent) {
++  if (!t.properties
++    && !t.templates
++    && !t.union
++    && t.expression === '[Object]')
++    return 'any';
++
++  // we'd get this call for enums, primarily
++  let enumName = generateEnumNameIfApplicable(t);
++  if (!enumName && member) {
++    if (member.kind === 'method' || member.kind === 'property') {
++      const names = [
++        parent.alias || parent.name,
++        toTitleCase(member.alias || member.name),
++        toTitleCase(name),
++      ];
++      if (names[2] === names[1])
++        names.pop(); // get rid of duplicates, cheaply
++      let attemptedName = names.pop();
++
++      while (true) {
++        // crude attempt at removing plurality
++        if (attemptedName.endsWith('s')
++          && !['properties', 'httpcredentials', 'sizes'].includes(attemptedName.toLowerCase()))
++          attemptedName = attemptedName.substring(0, attemptedName.length - 1);
++
++        // For some of these we don't want to generate generic types.
++        // For some others we simply did not have the code that was deduping the names.
++        if (attemptedName === 'Cookie') {
++          const optionalMembers = t.properties?.filter(m => !m.required)
++          if ( optionalMembers && optionalMembers.length > 1)
++            attemptedName = 'OptionalCookie';
++        }
++        if (attemptedName === 'BoundingBox' || attemptedName === 'Clip')
++          attemptedName = `Rect`;
++        if (attemptedName === 'SourcePosition' || attemptedName === 'TargetPosition')
++          attemptedName = `Position`;
++        if (attemptedName === 'Location')
++          attemptedName = `${parent.name}Location`;
++        if (attemptedName === 'Viewport')
++          attemptedName = 'Size';
++        if (attemptedName === 'Sizes')
++          attemptedName = 'RequestSizesResult';
++        if (attemptedName === 'Screen' || attemptedName === 'ViewportSize')
++          attemptedName = 'Size';
++        if (attemptedName === 'SecurityDetail')
++          attemptedName = 'ResponseSecurityDetailsResult';
++        if (attemptedName === 'ServerAddr')
++          attemptedName = 'ResponseServerAddrResult';
++        // WebAuthn: Credentials.Create/Get return the same shape; use the documented
++        // `* alias: VirtualCredential` (matching java/csharp) instead of the generic
++        // method-derived names Create/Get, so both share one struct.
++        if (parent.name === 'Credentials' && (attemptedName === 'Create' || attemptedName === 'Get'))
++          attemptedName = 'VirtualCredential';
++        // WebStorage.Items: use the documented `* alias: WebStorageItem` over generic `Item`.
++        if (parent.name === 'WebStorage' && attemptedName === 'Item')
++          attemptedName = 'WebStorageItem';
++        if (attemptedName === 'Timing')
++          attemptedName = 'RequestTiming';
++        if (attemptedName === 'HeadersArray' || attemptedName == 'LocalStorage')
++          attemptedName = 'NameValue';
++
++        const probableType = additionalTypes.get(attemptedName);
++        if ((probableType && typesDiffer(t, probableType))
++          || (['Value'].includes(attemptedName))) {
++          if (!names.length)
++            throw new Error(`Ran out of possible names: ${attemptedName}`);
++          if (attemptedName === 'StorageState') {
++            attemptedName = `Optional${attemptedName}`;
++          } else {
++            attemptedName = `${names.pop()}${attemptedName}`;
++          }
++          continue;
++        } else {
++          registerType(additionalTypes, attemptedName, t);
++        }
++        break;
++      }
++      return attemptedName;
++    }
++
++    if (member.kind === 'event') {
++      return `${name}Payload`;
++    }
++  }
++
++  return enumName || t.name;
++}
++
++/**
++ * @param {Documentation.Type} type
++ * @returns
++ */
++function generateEnumNameIfApplicable(type) {
++  if (!type.union)
++    return null;
++
++  const potentialValues = type.union.filter(u => u.name.startsWith('"'));
++  if ((potentialValues.length !== type.union.length)
++    && !(type.union[0].name === 'null' && potentialValues.length === type.union.length - 1))
++    return null; // this isn't an enum, so we don't care, we let the caller generate the name
++
++  return type.name;
++}
++
++/**
++ * @param {string} name
++ * @returns {string}
++ */
++function toTitleCase(name) {
++  return name.charAt(0).toUpperCase() + name.substring(1);
++}
++
++/**
++ * Rendering a method is so _special_, with so many weird edge cases, that it
++ * makes sense to put it separate from the other logic.
++ * @param {Documentation.Member} member
++ * @param {Documentation.Class|Documentation.Type} parent
++ * @param {string[]} out
++ */
++function renderInterface(member, parent, out) {
++  let output = (/** @type {string | string[]} */ line) => {
++    if (typeof (line) === 'string')
++      out.push(`\t${line}`);
++    else
++      out.push(...line.map(x => `\t${x}`));
++  }
++  const name = toMemberName(member);
++
++  if (member.kind === 'event') {
++    const payloadType = translateType(member.type, parent, t => generateNameDefault(member, name, t, parent), false, false)
++    output(transformComment(member));
++    if (payloadType === 'void')
++      output(`${name}(fn func())`);
++    else
++      output(`${name}(fn func(${payloadType}))`);
++    return;
++  }
++
++  // render returns
++  let returns = [];
++  let resultType = translateType(member.type, parent, t => generateNameDefault(member, name, t, parent), false, true)
++
++  if (additionalTypes.has(resultType))
++    resultType = `${resultType}`.replace(/^\*?/, '*');
++  // HACK: special cases for returns
++  if (resultType !== 'void' && resultType !== '*Error' && name !== 'Failure') // [Download|Request].Failure() error
++    returns.push(resultType);
++  // return error, and exclude some methods that don't
++  if (!resultType.endsWith('Locator') && !methodNoErr.has(name))
++    returns.push('error');
++  if (['ConsoleMessage', 'Dialog'].includes(parent.name) && (name === 'Type' || name === 'Text'))
++    returns.pop();
++  if (parent.name === 'APIResponse' && name === 'HeadersArray')
++    returns.pop();
++  if (parent.name === 'Locator' && (name === 'Page' || name === 'All')) // Locator.Page() (Page, error)
++    returns.push('error');
++  if (parent.name === 'WebSocketRoute' && ['Send', 'Close'].includes(name))
++    returns.pop();
++
++  // render args
++  let args = [];
++  const argDocs = new Map();
++  /**
++   * @param {string} innerArgType
++   * @param {string} innerArgName
++   * @param {Documentation.Member} argument
++   */
++  const pushArg = (innerArgType, innerArgName, argument) => {
++    if (argument.comment)
++      argDocs.set(`${innerArgName} ${innerArgType}`, `${innerArgName}: ${argument.comment.trimEnd().replace(/\n/g, '\n//    ')}`);
++    args.push(`${innerArgName} ${innerArgType}`);
++  };
++
++  /**
++   * @param {Documentation.Member} arg
++   */
++  let processArg = (arg) => {
++    if (arg.name === "options") {
++      return;
++    }
++
++    const argName = toArgumentName(arg.alias || arg.name);
++
++    // HACK: special cases for arguments
++    if (argName === 'callback' && arg.enclosingMethod?.name === 'exposeBinding') {
++      pushArg('BindingCallFunction', 'binding', arg);
++      return;
++    }
++    if (argName === 'callback' && arg.enclosingMethod?.name === 'exposeFunction') {
++      pushArg('ExposedFunction', 'binding', arg);
++      return;
++    }
++
++    let argType = translateType(arg.type, parent, (t) => generateNameDefault(member, argName, t, parent), !arg.required);
++
++    if (!argType) {
++      argType = 'any'
++    } else if (argName === 'handler' && argType === 'any') {
++      argType = 'func()'
++    }
++
++    if (argType === 'func(Route)')
++      argType = 'routeHandler';
++
++    pushArg(argType, argName, arg);
++  };
++
++
++  member.argsArray.forEach(processArg);
++
++  if (name === 'SelectOption')
++    args.push(args.pop().replace(/ any/, ' SelectOptionValues'));
++  if (name.match(/Expect[A-Z]\w+/))
++    args.push(`cb func() error`);
++
++  const optionsStructName = `${parent.name}${toTitleCase(member.alias)}Options`
++  let optionsStructMembers = member.argsArray.find(a => a.name === "options")?.type?.properties || []
++
++  if (optionsStructMembers.length > 0) {
++    // special cases for options that have only one member
++    if (optionsStructMembers.length === 1 && ['path', 'handle', 'times'].includes(optionsStructMembers[0].name)) {
++      let tmpType = optionsStructMembers[0];
++      tmpType.required = false;
++      processArg(tmpType);
++      args.push(args.pop()?.replace(/ +\*?([^\*]?\[\])?(?!map)/, ' ...'))
++    } else {
++      let fakeType = new Type("Object", optionsStructMembers);
++      registerType(additionalTypes, optionsStructName, fakeType)
++      if (['AddScriptTag', 'AddStyleTag'].includes(name))
++        args.push(`options ${optionsStructName}`);
++      else
++        args.push(`options ...${optionsStructName}`);
++    }
++  } else {
++    const argsArray = member.argsArray.filter(a => a.name !== "options")
++    if (argsArray.length > 0 && !argsArray[argsArray.length - 1].required) {
++      const arg = args.pop()
++      if (arg?.startsWith('map') || arg?.startsWith('['))
++        args.push(arg)
++      else
++        args.push(arg?.replace(/ +\*?([^\*]?\[\])?(?!map)/, ' ...'))
++    }
++  }
++
++  let paramsComments = args.reduce((a, c) => {
++    if (argDocs.has(c.replace(' ...', ' ')))
++      a.push(argDocs.get(c.replace(' ...', ' ')));
++    return a;
++  }, [])
++
++  output(transformComment(member, paramsComments));
++  if (parent.name === 'Touchscreen' && name === 'Tap')
++    output(`${name}(x int, y int) error`);
++  else if (['JSON', 'PostDataJSON'].includes(name) && args.length === 0 && resultType === 'any')
++    output(`${name}(v any) error`);
++  else
++    output(`${name}(${args.join(', ')}) ${returns.length <= 1 ? returns.join() : '(' + returns.join(', ') + ')'}`);
++}
++
++/**
++ *
++ *  @callback generateNameCallback
++ *  @param {Documentation.Type} t
++ *  @returns {string}
++ */
++
++
++/**
++ *
++ * @param {Map<string, Documentation.Type>} types
++ * @param {string} typeName
++ * @param {Documentation.Type} type
++ */
++function registerType(types, typeName, type) {
++  if (['object', 'string', 'int'].includes(typeName))
++    return;
++  if (ignoredTypes.includes(typeName))
++    return;
++
++  let potentialType = types.get(typeName);
++  if (potentialType) {
++    // console.log(`Type ${typeName} already exists, so skipping...`);
++    return;
++  }
++
++  types.set(typeName, type);
++}
++
++/**
++ * @param {Documentation.Class | Documentation.Member} member
++ * @param {string[]} paramComments
++ */
++function transformComment(member, paramComments = []) {
++  const links = [];
++  const extractLinks = (text) => {
++    let index = 0;
++    return text.replace(/(\[[^\]]+\])\((\S+)\)/gm, (m, g1, g2) => {
++      links.push(`${g1}: ${g2}`);
++      return `${g1}`;
++    })
++  }
++
++  let comment = member.comment.replace(/\[`method: ([^\]]*)`\]/g, "\[$1\]")
++    .replace(/\`'([^'\`\s]+)'\`/gm, "\`$1\`")
++    .replace(/^- /gm, " - ")  // for unorderd list
++    .replace(/(\[\w+\.)([a-z])/g, (m, g1, g2) => g1 + g2.toUpperCase())
++    .replace(/- extends: .*\n+/, "")
++
++  // render order list
++  let index = 0;
++  comment = comment.replace(/^(\d\.) /gm, (m) => {
++    index++
++    return ` ${index}. `
++  })
++
++  comment = extractLinks(comment);
++
++  let lines = comment.split("\n")
++  let inExample = false
++  let inUsage = false
++  let lastWasBlank = true
++  const out = []
++  for (const line of lines) {
++    if (!line.trim()) {
++      lastWasBlank = true
++      continue
++    }
++    if (line.trim() === "**Usage**") {
++      inUsage = true
++    }
++    if (line.trim() === "**Details**") {
++      inUsage = false
++      out.push(`//\n// # Details\n//`)
++      continue
++    }
++    if (["js", "js browser", "py", "python sync", "python async", "java", "csharp", "python"].includes(line.trim().substr(3)) && line.trim().startsWith("```"))
++      inExample = true
++    if (!inExample && !inUsage) {
++      if (lastWasBlank)
++        lastWasBlank = false
++      out.push(`// ${line}`)
++    }
++    if (line.trim() === "```")
++      inExample = false
++  }
++  if (member.deprecated || member.discouraged) {
++    out.push(`// `)
++    out.push(extractLinks(`// Deprecated: ${member.deprecated ? member.deprecated : member.discouraged}`.replace(/↵/gm, ' ')))
++  }
++  if (paramComments.length > 0) {
++    out.push(`// `);
++    const singleParam = paramComments.length === 1;
++    paramComments.forEach((line, i) => {
++      out.push(`// ${singleParam ? "" : `${i + 1}.`} ${line}`)
++    });
++  }
++  // render external links
++  if (links.length > 0) {
++    out.push(`// `);
++    links.forEach((line) => {
++      out.push(`// ${line.replace(/\.\.(\/\S+)(\.md)/, `https://playwright.dev/docs$1`)}`)
++    });
++  }
++
++  return out
++}
++
++/**
++ *  @param {Documentation.Type} type
++ *  @param {Documentation.Class|Documentation.Type} parent
++ *  @param {generateNameCallback} generateNameCallback
++ *  @param {boolean=} optional
++ *  @param {boolean=} isReturnType
++*/
++function translateType(type, parent, generateNameCallback = t => t.name, optional = false, isReturnType = false) {
++  if (['bool', 'int', 'string', 'float64', 'boolean', 'float'].includes(type.name)) {
++    let name = type.name === 'boolean' ? 'bool' : type.name === 'float' ? 'float64' : type.name;
++    return `${optional && !isReturnType ? '*' : ''}${name}`;
++  }
++  if (type.name === "Serializable")
++    return "any";
++  if (type.name === "Logger")
++    return "any";
++  if (type.name === 'URL' || type.name === 'path')
++    return `${optional && !isReturnType ? '*' : ''}string`;
++  // a few special cases we can fix automatically
++  if (type.expression === '[null]|[Error]')
++    return 'void';
++  else if (type.expression === '[Disposable]')
++    return 'void';
++  else if (type.expression === '[Error]')
++    return 'error';
++  else if (type.expression === '[boolean]|"mixed"')
++    return 'MixedState';
++  else if (type.expression === '[string]|[Request]')
++    return 'any';
++  else if (type.expression === '[path]|[Array]<[path]>|[Object]|[Array]<[Object]>')
++    return 'any';
++  else if (type.expression === '[path]|[Array]<[path]>|[Object=FilePayload]|[Array]<[Object=FilePayload]>')
++    return 'any';
++  else if (type.expression === '[function]([null]|[int], [null]|[string])')
++    return 'func(*int, *string)';
++  else if (optional && type.expression === '[string]|[Array]<[string]>')
++    return '[]string' // result:  ...string
++
++  let isNullableEnum = false;
++  if (type.union) {
++    if (type.union[0].name === 'null') {
++      // nullable, or optional
++      if (type.union.length > 2) {
++        if (type.union.filter(x => x.name.startsWith('"')).length == type.union.length - 1)
++          isNullableEnum = true; // seems never appear
++        else
++          return `any`
++      } else {
++        return translateType(type.union[1], parent, generateNameCallback, true, isReturnType);
++      }
++    }
++
++    // if enum
++    if (isNullableEnum ||
++      type.union.filter(u => u.name.startsWith(`"`)).length == type.union.length) {
++      let enumName = generateNameCallback(type);
++      if (!enumName)
++        throw new Error(`This was supposed to be an enum, but it failed generating a name, ${type.name} ${parent ? parent.name : ""}.`);
++
++      // make sure we map the enum, or invalidate the name, in case it doesn't match well
++      const potentialEnum = enumTypes.get(enumName);
++      let enumValues = type.union.filter(x => x.name !== 'null').map(x => x.name);
++      if (potentialEnum) {
++        // compare values
++        if (potentialEnum.join(',') !== enumValues.join(',')) {
++          // for now, we'll merge the two enums, if they have the same name, and we'll go from there
++          potentialEnum.concat(enumValues.filter(x => !potentialEnum.includes(x))); // merge & de-dupe
++          // TODO: think about doing global type annotation, where we can add comments, such as this?
++          enumTypes.set(enumName, potentialEnum);
++        }
++      } else {
++        enumTypes.set(enumName, enumValues);
++      }
++      if (isNullableEnum)
++        return `*${enumName}`;
++      return `${enumName}`;
++    }
++
++    if (type.expression === '[string]|[Buffer]')
++      return `any`; // TODO: make sure we implement extension methods for this!
++    else if (type.expression === '[string]|[float]'
++      || type.expression === '[string]|[float]|[boolean]') {
++      console.warn(`${type.name} should be a 'string', but was a ${type.expression}`);
++      return `string`;
++    }
++    // else if (type.union.length == 2 && type.union[1].name === 'Array' && type.union[1].templates[0].name === type.union[0].name)
++    //   return `[]${type.union[0].name}`; // an example of this is [string]|[Array]<[string]>
++    else if (type.union[0].name === 'path')
++      // we don't support path, but we know it's usually an object on the other end, and we expect
++      // the dotnet folks to use [NameOfTheObject].LoadFromPath(); method which we can provide separately
++      return translateType(type.union[1], parent, generateNameCallback, false, isReturnType);
++    else if (type.expression === '[function]|[string]|[Object]')
++      // HACK: for script path or content
++      return translateType(type.union[2], parent, generateNameCallback, false, isReturnType);
++    else if (type.expression === '[float]|"raf"')
++      return `any`; // hardcoded because there's no other way to denote this
++    else if (type.expression === '[string]|[RegExp]')
++      return "any"
++    if (type.expression === "[string]|[RegExp]|[function]([URL]):[boolean]")
++      return "any"
++    // other unions
++    return "any";
++  }
++
++  const removePointer = i => i ? i.replace(/^\*(.*)/g, "$1") : i
++  if (type.name === 'Array') {
++    if (type.templates.length != 1)
++      throw new Error(`Array (${type.name} from ${parent.name}) has more than 1 dimension. Panic.`);
++    let innerType = translateType(type.templates[0], parent, generateNameCallback, false, isReturnType);
++    return `[]${removePointer(innerType)}`;
++  }
++
++  if (type.name === 'Object') {
++    // take care of some common cases
++    if (type.templates && type.templates.length == 2) {
++      // get the inner types of both templates, and if they're strings, it's a keyvaluepair string, string,
++      let keyType = translateType(type.templates[0], parent, generateNameCallback, false, isReturnType);
++      let valueType = translateType(type.templates[1], parent, generateNameCallback, false, isReturnType);
++      return `map[${removePointer(keyType)}]${removePointer(valueType)}`;
++    }
++
++    if (!type.properties && !type.union) {
++      return 'any';
++    }
++
++    // this is an additional type that we need to generate
++    let objectName = generateNameCallback(type);
++    if (objectName === 'Object') {
++      throw new Error('Object unexpected');
++    } else if (type.name === 'Object') {
++      const existType = additionalTypes.get(objectName)
++      if (existType && typesDiffer(type, existType))
++        objectName = `${objectName}Result`;
++      registerType(additionalTypes, objectName, type);
++    }
++    return `${optional ? '*' : ''}${objectName}`;
++  }
++
++  if (type.name === 'Map') {
++    if (type.templates && type.templates.length == 2) {
++      // we map to a dictionary
++      let keyType = translateType(type.templates[0], parent, generateNameCallback, false, isReturnType);
++      let valueType = translateType(type.templates[1], parent, generateNameCallback, false, isReturnType);
++      return `map[${removePointer(keyType)}]${valueType}`;
++    } else {
++      throw 'Map has invalid number of templates.';
++    }
++  }
++
++  if (type.name === 'function') {
++    if (type.expression === '[function]' || !type.args)
++      return 'any'; // super simple mapping
++
++    let argsList = '';
++    if (type.args) {
++      let translatedCallbackArguments = type.args.map(t => translateType(t, parent, generateNameCallback));
++      if (translatedCallbackArguments.includes(null))
++        throw new Error('There was an argument we could not parse. Aborting.');
++
++      argsList = translatedCallbackArguments.join(', ');
++    }
++
++    if (!type.returnType) {
++      // this is an Action
++      return `func(${argsList})`;
++    } else {
++      let returnType = removePointer(translateType(type.returnType, parent, generateNameCallback, false, true));
++      if (returnType == null)
++        throw new Error('Unexpected null as return type.');
++      if (returnType === 'void' || returnType === 'Promise')
++        return `func(${argsList})`;
++      return `func(${argsList}) ${returnType}`;
++    }
++  }
++
++  // there's a chance this is a name we've already seen before, so check
++  // this is also where we map known types, like boolean -> bool, etc.
++  let name = classNameMap.get(type.name) || type.name;
++  return `${name}`;
++}
++
++/**
++ *  @param {Documentation.Type} left
++ *  @param {Documentation.Type} right
++ * @return {boolean}
++ */
++
++function typesDiffer(left, right) {
++  if (left.name !== right.name)
++    return true;
++  const replacer = (k, v) => {
++    if (k === 'since' || k === 'spec' || k === 'comment' || k === 'enclosingMethod' || k === 'parent')
++      return undefined;
++    return v
++  }
++  if (JSON.stringify(right.properties, replacer) !== JSON.stringify(left.properties, replacer)) {
++    // console.log(JSON.stringify(left.properties, replacer) + '\n')
++    // console.log(JSON.stringify(right.properties, replacer) + '\n')
++    return true;
++  }
++  return false;
++};

@@ -75,15 +75,17 @@ All evaluate methods automatically use isolated execution contexts (Patchright's
 
 ## Anti-detection best practices
 
-Patchright patches the driver but you should also configure the browser correctly:
+**IMPORTANT**: Headless Chromium sends `HeadlessChrome` in the default user agent,
+which is an instant detection signal. You MUST either set a custom UserAgent or
+use `Channel: "chrome"` (requires Google Chrome installed on the system).
 
 ```go
 browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-    Channel:  patchright.String("chrome"), // use real Chrome, not bare Chromium
     Headless: patchright.Bool(true),
 })
 
 context, err := browser.NewContext(patchright.BrowserNewContextOptions{
+    // REQUIRED: override HeadlessChrome UA. Real Chrome only sends major version.
     UserAgent: patchright.String("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"),
     Viewport:  &patchright.Size{Width: 1920, Height: 1080},
     Locale:    patchright.String("en-US"),
@@ -92,9 +94,18 @@ context, err := browser.NewContext(patchright.BrowserNewContextOptions{
 page, err := context.NewPage()
 ```
 
+Or install and use Google Chrome (sends correct UA natively):
+```go
+// First: go run ./cmd/patchright install chrome
+browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    Channel:  patchright.String("chrome"),
+    Headless: patchright.Bool(true),
+})
+```
+
 Key rules:
-1. **Use `Channel: "chrome"`** - Google Chrome is harder to fingerprint than bare Chromium
-2. **Set a realistic user agent** - real Chrome uses major version only (e.g. `Chrome/149.0.0.0`, never `Chrome/149.0.7827.55`)
+1. **Always set UserAgent** when using headless Chromium — the default says `HeadlessChrome` which is instant detection. Alternative: use `Channel: "chrome"`
+2. **Real Chrome UA format** uses major version only: `Chrome/149.0.0.0`, never `Chrome/149.0.7827.55`
 3. **Set viewport** to a common resolution (1920x1080, 1366x768, etc)
 4. **Set locale** to match target site region
 5. **Use `NewContext`** instead of `NewPage` directly on browser for full control

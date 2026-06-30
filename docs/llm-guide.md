@@ -43,9 +43,24 @@ defer browser.Close()
 ## Create page and navigate
 
 ```go
+// Standard page (no UA patching)
 page, err := browser.NewPage()
+
+// Stealth page (recommended) — auto-patches HeadlessChrome UA to real Chrome format
+// Affects navigator.userAgent AND all HTTP requests (fetch, XHR, navigation)
+page, err := browser.NewStealthPage()
+
 _, err = page.Goto("https://example.com")
 title, err := page.Title()
+```
+
+## Stealth context (multiple pages sharing patched UA)
+
+```go
+context, err := browser.NewStealthContext()
+page1, err := context.NewPage()
+page2, err := context.NewPage()
+// Both pages share the patched UA
 ```
 
 ## Create context with options
@@ -76,40 +91,54 @@ All evaluate methods automatically use isolated execution contexts (Patchright's
 ## Anti-detection best practices
 
 **IMPORTANT**: Headless Chromium sends `HeadlessChrome` in the default user agent,
-which is an instant detection signal. You MUST either set a custom UserAgent or
-use `Channel: "chrome"` (requires Google Chrome installed on the system).
+which is an instant detection signal. Use `NewStealthPage` / `NewStealthContext`
+to automatically fix this.
+
+### Easiest approach — stealth methods (recommended)
 
 ```go
-browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-    Headless: patchright.Bool(true),
-})
+browser, err := pw.Chromium.Launch()
 
+// Auto-patches UA: HeadlessChrome → Chrome, 149.0.7827.55 → 149.0.0.0
+// Applied to navigator.userAgent AND all HTTP requests (fetch, XHR, etc)
+page, err := browser.NewStealthPage()
+```
+
+### Manual approach — set UserAgent yourself
+
+```go
 context, err := browser.NewContext(patchright.BrowserNewContextOptions{
-    // REQUIRED: override HeadlessChrome UA. Real Chrome only sends major version.
     UserAgent: patchright.String("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36"),
     Viewport:  &patchright.Size{Width: 1920, Height: 1080},
     Locale:    patchright.String("en-US"),
 })
-
 page, err := context.NewPage()
 ```
 
-Or install and use Google Chrome (sends correct UA natively):
+### Use the PatchHeadlessUA helper directly
+
+```go
+rawUA := "Mozilla/5.0 ... HeadlessChrome/149.0.7827.55 ..."
+fixedUA := patchright.PatchHeadlessUA(rawUA)
+// → "Mozilla/5.0 ... Chrome/149.0.0.0 ..."
+```
+
+### Google Chrome channel (requires Chrome installed on system)
+
 ```go
 // First: go run ./cmd/patchright install chrome
 browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-    Channel:  patchright.String("chrome"),
-    Headless: patchright.Bool(true),
+    Channel: patchright.String("chrome"),
 })
+// Chrome channel sends correct UA natively — no patching needed
 ```
 
-Key rules:
-1. **Always set UserAgent** when using headless Chromium — the default says `HeadlessChrome` which is instant detection. Alternative: use `Channel: "chrome"`
+### Key rules
+1. **Use `NewStealthPage`/`NewStealthContext`** for automatic UA patching — simplest option
 2. **Real Chrome UA format** uses major version only: `Chrome/149.0.0.0`, never `Chrome/149.0.7827.55`
 3. **Set viewport** to a common resolution (1920x1080, 1366x768, etc)
 4. **Set locale** to match target site region
-5. **Use `NewContext`** instead of `NewPage` directly on browser for full control
-6. **Wait properly** - use `WaitUntilStateDomcontentloaded` instead of `WaitUntilStateNetworkidle` for sites with heavy analytics
+5. **Wait properly** - use `WaitUntilStateDomcontentloaded` instead of `WaitUntilStateNetworkidle` for sites with heavy analytics
 
 Without these, sites with advanced protection (Akamai, PerimeterX, Datadome) may still detect you despite Patchright's patches.
 

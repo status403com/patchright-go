@@ -193,6 +193,16 @@ type Browser interface {
 	// to control their exact life times.
 	NewPage(options ...BrowserNewPageOptions) (Page, error)
 
+	// NewStealthPage creates a new page with a patched user agent that masks
+	// headless browser fingerprints. Replaces HeadlessChrome with Chrome and
+	// normalizes the version to match real Chrome format (e.g. 149.0.0.0).
+	NewStealthPage(options ...BrowserNewPageOptions) (Page, error)
+
+	// NewStealthContext creates a new browser context with a patched user agent
+	// that masks headless browser fingerprints. Same as NewContext but
+	// automatically patches the user agent if not explicitly set.
+	NewStealthContext(options ...BrowserNewContextOptions) (BrowserContext, error)
+
 	// Binds the browser to a named pipe or web socket, making it available for other clients to connect to.
 	//
 	//  title: Title of the browser server, used for identification.

@@ -372,9 +372,10 @@ func (f *frameImpl) Evaluate(expression string, options ...any) (any, error) {
 
 func (f *frameImpl) EvalOnSelector(selector string, expression string, arg any, options ...FrameEvalOnSelectorOptions) (any, error) {
 	params := map[string]any{
-		"selector":   selector,
-		"expression": expression,
-		"arg":        serializeArgument(arg),
+		"selector":        selector,
+		"expression":      expression,
+		"arg":             serializeArgument(arg),
+		"isolatedContext": true,
 	}
 	if len(options) == 1 && options[0].Strict != nil {
 		params["strict"] = *options[0].Strict

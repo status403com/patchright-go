@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -249,12 +248,10 @@ func (d *PatchrightDriver) downloadPatchrightCore() error {
 		if header.Typeflag != tar.TypeReg || !strings.HasPrefix(header.Name, "package/") {
 			continue
 		}
-		// Strip "package/" prefix so files land directly in the target dir.
 		relativePath := strings.TrimPrefix(header.Name, "package/")
-		diskPath := filepath.Join(nodeModulesDir, relativePath)
-		prefix := filepath.Clean(nodeModulesDir) + string(os.PathSeparator)
-		if diskPath != filepath.Clean(nodeModulesDir) && !strings.HasPrefix(diskPath, prefix) {
-			return fmt.Errorf("invalid path in archive: %s", header.Name)
+		diskPath, err := safeJoin(nodeModulesDir, relativePath)
+		if err != nil {
+			return err
 		}
 		if err := writeFileFromReader(diskPath, tarReader, header.FileInfo().Mode()); err != nil {
 			return err
@@ -267,7 +264,6 @@ func (d *PatchrightDriver) downloadPatchrightCore() error {
 	return nil
 }
 
-// downloadNode downloads the per-platform Node.js binary from nodejs.org and
 // downloadNode downloads the per-platform Node.js binary. It is a no-op when
 // NodeJSPath is set or PATCHRIGHT_NODEJS_PATH env var is set.
 func (d *PatchrightDriver) downloadNode() error {
@@ -354,7 +350,7 @@ func (d *PatchrightDriver) patchDriverBundle() error {
 
 func (d *PatchrightDriver) log(msg string, args ...any) {
 	if d.options.Verbose {
-		logger.Info(msg, args...)
+		d.options.Logger.Info(msg, args...)
 	}
 }
 
@@ -480,11 +476,11 @@ func Run(options ...*RunOptions) (*Patchright, error) {
 }
 
 func transformRunOptions(options ...*RunOptions) (*RunOptions, error) {
-	option := &RunOptions{
+	option := RunOptions{
 		Verbose: true,
 	}
 	if len(options) == 1 {
-		option = options[0]
+		option = *options[0]
 	}
 	if option.OnlyInstallShell && option.NoInstallShell {
 		return nil, fmt.Errorf("OnlyInstallShell and NoInstallShell cannot be set at the same time")
@@ -504,13 +500,11 @@ func transformRunOptions(options ...*RunOptions) (*RunOptions, error) {
 	}
 	if option.Stderr == nil {
 		option.Stderr = os.Stderr
-	} else if option.Logger == nil {
-		log.SetOutput(option.Stderr)
 	}
-	if option.Logger != nil {
-		logger = option.Logger
+	if option.Logger == nil {
+		option.Logger = slog.New(slog.NewTextHandler(option.Stderr, nil))
 	}
-	return option, nil
+	return &option, nil
 }
 
 func getNodeExecutable(options *RunOptions) string {

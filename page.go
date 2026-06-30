@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -38,7 +37,7 @@ type pageImpl struct {
 	locatorHandlers map[float64]*locatorHandlerEntry
 	localStorage    *webStorageImpl
 	sessionStorage  *webStorageImpl
-	routeInjecting  bool
+	routeInjecting  atomic.Bool
 }
 
 func (p *pageImpl) LocalStorage() WebStorage {
@@ -814,19 +813,11 @@ func (p *pageImpl) IsClosed() bool {
 }
 
 func (p *pageImpl) installInjectRoute() error {
-	if p.routeInjecting {
+	if !p.routeInjecting.CompareAndSwap(false, true) {
 		return nil
 	}
-	p.routeInjecting = true
 	return p.Route("**/*", func(route Route) {
-		req := route.Request()
-		resourceType := req.ResourceType()
-		url := req.URL()
-		if resourceType == "document" && (strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://")) {
-			route.Fallback(RouteFallbackOptions{})
-		} else {
-			route.Fallback(RouteFallbackOptions{})
-		}
+		_ = route.Fallback(RouteFallbackOptions{})
 	})
 }
 

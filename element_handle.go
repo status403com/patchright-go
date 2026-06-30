@@ -136,9 +136,10 @@ func (e *elementHandleImpl) EvalOnSelector(selector string, expression string, o
 		arg = options[0]
 	}
 	result, err := e.channel.Send("evalOnSelector", map[string]any{
-		"selector":   selector,
-		"expression": expression,
-		"arg":        serializeArgument(arg),
+		"selector":        selector,
+		"expression":      expression,
+		"arg":             serializeArgument(arg),
+		"isolatedContext": true,
 	})
 	if err != nil {
 		return nil, err
@@ -152,9 +153,10 @@ func (e *elementHandleImpl) EvalOnSelectorAll(selector string, expression string
 		arg = options[0]
 	}
 	result, err := e.channel.Send("evalOnSelectorAll", map[string]any{
-		"selector":   selector,
-		"expression": expression,
-		"arg":        serializeArgument(arg),
+		"selector":        selector,
+		"expression":      expression,
+		"arg":             serializeArgument(arg),
+		"isolatedContext": true,
 	})
 	if err != nil {
 		return nil, err

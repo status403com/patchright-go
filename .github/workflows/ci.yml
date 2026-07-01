@@ -36,8 +36,8 @@ jobs:
         with:
           go-version: '1.23'
 
-      - name: Unit tests
-        run: go test -run "TestGetNodeExecutable|TestGetDriverCliJs|TestNodePlatformSuffix|TestPatchDriverBundle|TestNpmRegistryEnv|TestRunOptionsRedirectStderr" ./... -v -count=1
+      - name: Unit tests (no browser needed)
+        run: go test -run "TestGetNodeExecutable|TestGetDriverCliJs|TestNodePlatformSuffix|TestPatchDriverBundle|TestNpmRegistryEnv|TestRunOptionsRedirectStderr|TestPatchHeadlessUA" ./... -v -count=1
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -52,5 +52,21 @@ jobs:
       - name: Install driver and browsers
         run: go run ./cmd/patchright install chromium
 
-      - name: Integration tests
-        run: go test -run "TestDriverInstall|TestShouldNotHangWhenPlaywrightUnexpectedExit" ./... -v -count=1 -timeout 120s
+      - name: Driver install test
+        run: go test -run "TestDriverInstall" ./... -v -count=1 -timeout 120s
+
+  feature-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install driver and browsers
+        run: go run ./cmd/patchright install chromium
+
+      - name: Feature tests
+        run: go test -run "TestCSSSelector|TestXPathSelector|TestTextSelector|TestEvaluate|TestClick|TestDoubleClick|TestHover|TestFill|TestPressSequentially|TestSelectDropdown|TestCheckbox|TestKeyboard|TestWaitForSelector|TestLocator|TestPage|TestMainFrame|TestNavigatorWebdriver|TestStealthUA" ./... -v -count=1 -timeout 120s

@@ -239,13 +239,37 @@ for i := 0; i < 10; i++ {
     wg.Add(1)
     go func() {
         defer wg.Done()
-        browser, _ := pw.Chromium.Launch()
+        browser, _ := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+            Headless: patchright.Bool(false),
+        })
         defer browser.Close()
         page, _ := browser.NewStealthPage()
         page.Goto("https://example.com")
     }()
 }
 wg.Wait()
+```
+
+## Memory usage
+
+Go client uses ~2-3 MB. Memory is dominated by Chromium. Tabs are much cheaper than browsers.
+
+| RAM | Browsers (~395 MB each) | Tabs (~77 MB each) |
+|-----|------------------------|--------------------|
+| 1 GB | ~2 | ~10 |
+| 2 GB | ~4 | ~24 |
+| 4 GB | ~9 | ~50 |
+| 8 GB | ~20 | ~104 |
+| 16 GB | ~41 | ~211 |
+
+Prefer tabs (pages in one browser/context) when you don't need separate fingerprints:
+```go
+browser, _ := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    Headless: patchright.Bool(false),
+})
+ctx, _ := browser.NewStealthContext()
+page1, _ := ctx.NewPage()
+page2, _ := ctx.NewPage() // shares browser process, ~77 MB instead of ~395 MB
 ```
 
 ## Pointer helpers

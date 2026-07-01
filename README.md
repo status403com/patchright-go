@@ -197,6 +197,20 @@ for i := 0; i < 50; i++ {
 wg.Wait()
 ```
 
+### Memory usage
+
+The Go client itself uses ~2-3 MB regardless of browser count. Memory is dominated by Chromium processes. Tabs within a single browser share renderer processes and are significantly cheaper than separate browsers.
+
+| RAM | Separate browsers | Tabs (single browser) |
+|-----|------------------|-----------------------|
+| 1 GB | ~2 | ~10 |
+| 2 GB | ~4 | ~24 |
+| 4 GB | ~9 | ~50 |
+| 8 GB | ~20 | ~104 |
+| 16 GB | ~41 | ~211 |
+
+**Use tabs when possible** — a single browser with many tabs via `NewStealthContext` uses ~77 MB per tab, while separate browser instances use ~395 MB each. Use separate browsers only when you need isolated browser fingerprints or independent cookie jars beyond what contexts provide.
+
 ## API
 
 The API is identical to [playwright-go](https://pkg.go.dev/github.com/mxschmitt/playwright-go) with the type renames listed above, plus the stealth methods. Refer to the playwright-go documentation for the full API reference and `docs/llm-guide.md` for a concise cheat sheet.

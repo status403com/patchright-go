@@ -233,7 +233,7 @@ func (b *browserContextImpl) installInjectRoute() error {
 	if !b.routeInjecting.CompareAndSwap(false, true) {
 		return nil
 	}
-	return b.Route("**/*", func(route Route) {
+	err := b.Route("**/*", func(route Route) {
 		req := route.Request()
 		if req.ResourceType() == "document" && strings.HasPrefix(req.URL(), "http") {
 			_ = route.Fallback(RouteFallbackOptions{
@@ -243,6 +243,10 @@ func (b *browserContextImpl) installInjectRoute() error {
 			_ = route.Fallback(RouteFallbackOptions{})
 		}
 	})
+	if err != nil {
+		b.routeInjecting.Store(false)
+	}
+	return err
 }
 
 func (b *browserContextImpl) AddInitScript(script Script) error {

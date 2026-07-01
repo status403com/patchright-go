@@ -21,7 +21,9 @@ The driver is assembled from two npm packages:
 - Package name: `patchright` (not `playwright`)
 - Downloads `patchright` + `patchright-core` npm packages instead of `playwright-core`
 - All `Evaluate` methods pass `isolatedContext: true` by default (avoids Runtime.enable leak)
-- Init script injection via route interception
+- Init script injection via route interception with `patchrightInitScript` flag
+- Stealth API: `NewStealthPage`/`NewStealthContext` auto-patch HeadlessChrome UA
+- `PatchHeadlessUA()` helper transforms HeadlessChrome → Chrome, version → major.0.0.0
 - Chromium-only (Firefox/WebKit not supported by Patchright)
 - Env vars use `PATCHRIGHT_` prefix (not `PLAYWRIGHT_`)
 - Config can be passed as struct fields instead of env vars
@@ -48,15 +50,18 @@ go test ./... -timeout 120s    # includes integration tests (downloads driver + 
 
 - `run.go` - Driver download, installation, and startup
 - `playwright.go` - Main `Patchright` type definition
+- `stealth.go` - `NewStealthPage`/`NewStealthContext`, `PatchHeadlessUA` helper
 - `connection.go` - JSON pipe communication with the Node.js driver
-- `transport.go` - stdio pipe transport
+- `transport.go` - stdio pipe transport (uses sync.Once for Close)
 - `frame.go` - Frame evaluation methods (with `isolatedContext: true`)
 - `worker.go` - Worker evaluation methods (with `isolatedContext: true`)
 - `js_handle.go` - JSHandle evaluation methods (with `isolatedContext: true`)
-- `page.go` - Page methods including init script route injection
-- `route.go` - Route handling
+- `page.go` - Page methods, init script route injection with `patchrightInitScript`
+- `browser_context.go` - Context methods, context-level route injection
+- `route.go` - Route handling, `patchrightInitScript` forwarding
+- `request.go` - Request overrides including `PatchrightInitScript`
 - `browser_type.go` - Browser launch and context creation
-- `generated-*.go` - Auto-generated types from Playwright protocol
+- `generated-*.go` - Auto-generated types from Playwright protocol (+ Patchright additions)
 - `cmd/patchright/` - CLI tool for driver/browser management
 
 ## Key env vars (all optional, struct fields preferred)

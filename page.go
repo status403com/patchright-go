@@ -817,7 +817,7 @@ func (p *pageImpl) installInjectRoute() error {
 	if !p.routeInjecting.CompareAndSwap(false, true) {
 		return nil
 	}
-	return p.Route("**/*", func(route Route) {
+	err := p.Route("**/*", func(route Route) {
 		req := route.Request()
 		if req.ResourceType() == "document" && strings.HasPrefix(req.URL(), "http") {
 			_ = route.Fallback(RouteFallbackOptions{
@@ -827,6 +827,10 @@ func (p *pageImpl) installInjectRoute() error {
 			_ = route.Fallback(RouteFallbackOptions{})
 		}
 	})
+	if err != nil {
+		p.routeInjecting.Store(false)
+	}
+	return err
 }
 
 func (p *pageImpl) AddInitScript(script Script) error {

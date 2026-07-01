@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 type browserImpl struct {
@@ -17,6 +18,9 @@ type browserImpl struct {
 	browserType                  BrowserType
 	chromiumTracingPath          *string
 	closeReason                  *string
+	stealthUA                    string
+	stealthUAOnce                sync.Once
+	stealthUAErr                 error
 }
 
 func (b *browserImpl) BrowserType() BrowserType {

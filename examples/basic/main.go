@@ -14,20 +14,18 @@ func main() {
 	}
 	defer pw.Stop()
 
-	browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-		Headless: patchright.Bool(false),
-	})
+	browser, err := pw.Chromium.Launch()
 	if err != nil {
 		log.Fatalf("could not launch browser: %v", err)
 	}
 	defer browser.Close()
 
-	page, err := browser.NewPage()
+	page, err := browser.NewStealthPage()
 	if err != nil {
 		log.Fatalf("could not create page: %v", err)
 	}
 
-	if _, err = page.Goto("https://abrahamjuliot.github.io/creepjs/"); err != nil {
+	if _, err = page.Goto("https://example.com"); err != nil {
 		log.Fatalf("could not goto: %v", err)
 	}
 
@@ -37,7 +35,6 @@ func main() {
 	}
 	fmt.Printf("Title: %s\n", title)
 
-	// Verify navigator.webdriver is false (anti-detection working)
 	webdriver, err := page.Evaluate("() => navigator.webdriver")
 	if err != nil {
 		log.Fatalf("could not evaluate: %v", err)

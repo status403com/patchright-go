@@ -1,9 +1,9 @@
 package patchright
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
-	"sync"
 )
 
 var chromeVersionRe = regexp.MustCompile(`(Chrome/)(\d+)\.\d+\.\d+\.\d+`)
@@ -42,6 +42,7 @@ func (b *browserImpl) NewStealthPage(options ...BrowserNewPageOptions) (Page, er
 	}
 	page, err := context.NewPage()
 	if err != nil {
+		context.Close()
 		return nil, err
 	}
 	page.(*pageImpl).ownedContext = context
@@ -67,33 +68,35 @@ func (b *browserImpl) NewStealthContext(options ...BrowserNewContextOptions) (Br
 	return b.NewContext(opts)
 }
 
-var (
-	patchedUACache   string
-	patchedUACacheMu sync.Mutex
-)
-
 func (b *browserImpl) getPatchedUA() (string, error) {
-	patchedUACacheMu.Lock()
-	defer patchedUACacheMu.Unlock()
-
-	if patchedUACache != "" {
-		return patchedUACache, nil
-	}
-
-	ctx, err := b.NewContext()
-	if err != nil {
-		return "", err
-	}
-	page, err := ctx.NewPage()
-	if err != nil {
-		ctx.Close()
-		return "", err
-	}
-	rawUA, err := page.Evaluate("() => navigator.userAgent")
-	ctx.Close()
-	if err != nil {
-		return "", err
-	}
-	patchedUACache = PatchHeadlessUA(rawUA.(string))
-	return patchedUACache, nil
+	b.stealthUAOnce.Do(func() {
+		ctx, err := b.NewContext()
+		if err != nil {
+			b.stealthUAErr = fmt.Errorf("stealth UA: could not create context: %w", err)
+			return
+		}
+		page, err := ctx.NewPage()
+		if err != nil {
+			if closeErr := ctx.Close(); closeErr != nil {
+				logger.Error("stealth UA: could not close context", "error", closeErr)
+			}
+			b.stealthUAErr = fmt.Errorf("stealth UA: could not create page: %w", err)
+			return
+		}
+		rawUA, err := page.Evaluate("() => navigator.userAgent")
+		if closeErr := ctx.Close(); closeErr != nil {
+			logger.Error("stealth UA: could not close context", "error", closeErr)
+		}
+		if err != nil {
+			b.stealthUAErr = fmt.Errorf("stealth UA: could not evaluate: %w", err)
+			return
+		}
+		ua, ok := rawUA.(string)
+		if !ok {
+			b.stealthUAErr = fmt.Errorf("stealth UA: unexpected type %T", rawUA)
+			return
+		}
+		b.stealthUA = PatchHeadlessUA(ua)
+	})
+	return b.stealthUA, b.stealthUAErr
 }

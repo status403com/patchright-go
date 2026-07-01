@@ -229,7 +229,7 @@ for i := 0; i < 10; i++ {
         defer wg.Done()
         browser, _ := pw.Chromium.Launch()
         defer browser.Close()
-        page, _ := browser.NewPage()
+        page, _ := browser.NewStealthPage()
         page.Goto("https://example.com")
     }()
 }

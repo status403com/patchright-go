@@ -1,8 +1,26 @@
 # patchright-go
 
-Go library for [Patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright) — a patched version of [Playwright](https://playwright.dev/) that evades bot detection.
+Port of [playwright-go](https://github.com/playwright-community/playwright-go) made to work with the [Patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright) driver, with a couple of small UX tweaks (`NewStealthPage`, automatic UA patching). Early version — has not been tested in a production environment yet.
 
-Built on top of [playwright-go](https://github.com/playwright-community/playwright-go), this library downloads and communicates with the Patchright driver (a patched Playwright server) to provide anti-detection browser automation for Go.
+Thin Go client wrapping the Node.js Patchright server over stdio pipes; all browser automation runs through the patched Playwright engine, Go handles serialization and the public API.
+
+## How it works
+
+```
+Your Go code
+    ↓ function calls
+patchright-go (thin Go client)
+    ↓ JSON messages over stdin/stdout pipes
+Node.js process running patchright-core (patched Playwright server)
+    ↓ Chrome DevTools Protocol (CDP) over WebSocket
+Chromium browser process(es)
+```
+
+When you call `patchright.Run()`, the library spawns a Node.js child process running the patched Playwright server. Every Go API call (click, evaluate, goto, etc.) is serialized to JSON, sent over the stdin pipe, and the response is read back from stdout. The Node.js process handles all actual browser automation via CDP.
+
+The Go side is ~3 MB of heap at 10 concurrent browsers — it's purely serialization and API surface. The real memory cost is Chromium (~395 MB per browser, ~77 MB per tab).
+
+Node.js is required because the entire Playwright engine (CDP protocol handling, browser lifecycle, routing, tracing) is written in JavaScript. All Patchright language bindings (Python, Node.js, .NET, Go) are thin clients talking to this same server.
 
 ## What Patchright patches
 

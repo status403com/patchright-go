@@ -1,6 +1,6 @@
 # patchright-go
 
-Go library for Patchright - a patched Playwright driver that evades bot detection.
+Unofficial community Go library for Patchright - a patched Playwright driver that evades bot detection. Not affiliated with or endorsed by the Patchright project. If an official Go binding is released, it takes priority. This is maintained for our own use with no long-term maintenance commitment.
 
 ## Project overview
 

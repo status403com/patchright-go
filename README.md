@@ -1,5 +1,7 @@
 # patchright-go
 
+> **Unofficial community port.** This is not affiliated with or endorsed by the Patchright project. If an official Go binding is released, it takes priority over this package. We maintain this for our own use and may stop at any time — adopt accordingly.
+
 Port of [playwright-go](https://github.com/playwright-community/playwright-go) made to work with the [Patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright) driver, with a couple of small UX tweaks (`NewStealthPage`, automatic UA patching). Early version — has not been tested in a production environment yet.
 
 Thin Go client wrapping the Node.js Patchright server over stdio pipes; all browser automation runs through the patched Playwright engine, Go handles serialization and the public API.

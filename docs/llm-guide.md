@@ -23,18 +23,23 @@ defer pw.Stop()
 
 ## Launch browser
 
-```go
-// Headless (default)
-browser, err := pw.Chromium.Launch()
+**Always prefer headful mode.** Anti-bot solutions can detect headless browsers
+through deep fingerprinting (WebGL, navigator.plugins, screen dimensions) even
+with Patchright patches. If you're getting blocked, switch to headful first.
 
-// Headed
+```go
+// Headful (recommended) — passes advanced anti-bot like PerimeterX
 browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
     Headless: patchright.Bool(false),
 })
 
-// Use Google Chrome instead of Chromium (recommended)
+// Headless — only when headful is not possible (CI, serverless)
+browser, err := pw.Chromium.Launch()
+
+// Use Google Chrome channel (requires Chrome installed on system)
 browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-    Channel: patchright.String("chrome"),
+    Channel:  patchright.String("chrome"),
+    Headless: patchright.Bool(false),
 })
 
 defer browser.Close()
@@ -134,13 +139,20 @@ browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
 ```
 
 ### Key rules
-1. **Use `NewStealthPage`/`NewStealthContext`** for automatic UA patching — simplest option
-2. **Real Chrome UA format** uses major version only: `Chrome/149.0.0.0`, never `Chrome/149.0.7827.55`
-3. **Set viewport** to a common resolution (1920x1080, 1366x768, etc)
-4. **Set locale** to match target site region
-5. **Wait properly** - use `WaitUntilStateDomcontentloaded` instead of `WaitUntilStateNetworkidle` for sites with heavy analytics
+1. **Use headful mode** (`Headless: false`) — headless browsers are detectable via deep fingerprinting (WebGL, navigator.plugins, screen dimensions) even with Patchright. If you're getting blocked, this is the most likely fix
+2. **Use `NewStealthPage`/`NewStealthContext`** for automatic UA patching — simplest option
+3. **Real Chrome UA format** uses major version only: `Chrome/149.0.0.0`, never `Chrome/149.0.7827.55`
+4. **Set viewport** to a common resolution (1920x1080, 1366x768, etc)
+5. **Set locale** to match target site region
+6. **Wait properly** - use `WaitUntilStateDomcontentloaded` instead of `WaitUntilStateNetworkidle` for sites with heavy analytics
 
-Without these, sites with advanced protection (Akamai, PerimeterX, Datadome) may still detect you despite Patchright's patches.
+### Troubleshooting blocks
+If you're getting blocked despite using Patchright:
+1. Switch to headful mode (`Headless: false`) — this is the #1 fix
+2. Use `NewStealthPage` instead of `NewPage`
+3. Try `Channel: "chrome"` with Google Chrome installed
+4. Set a realistic viewport and locale
+5. Add delays between actions to mimic human behavior
 
 ## Click, type, fill
 

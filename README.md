@@ -61,7 +61,11 @@ func main() {
     }
     defer pw.Stop()
 
-    browser, err := pw.Chromium.Launch()
+    // Prefer headful over headless — anti-bot solutions can still detect
+    // headless browsers via deep fingerprinting even with Patchright patches
+    browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+        Headless: patchright.Bool(false),
+    })
     if err != nil {
         log.Fatal(err)
     }
@@ -79,6 +83,24 @@ func main() {
     fmt.Println(title)
 }
 ```
+
+## Headless vs headful
+
+**Always prefer headful mode (`Headless: false`) unless you have a specific reason to use headless.** Anti-bot solutions like PerimeterX, Akamai, and Datadome can still detect headless browsers through deep fingerprinting (WebGL renderer, `navigator.plugins`, screen/window dimension mismatches, etc.) even with all Patchright patches applied.
+
+In testing, headful mode passes Walmart.ca's PerimeterX protection on product pages, while headless mode gets blocked — even with a patched user agent and `navigator.webdriver: false`.
+
+```go
+// Headful (recommended) — passes advanced anti-bot
+browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    Headless: patchright.Bool(false),
+})
+
+// Headless — use only when headful is not possible (CI, serverless, etc.)
+browser, err := pw.Chromium.Launch()
+```
+
+If you're getting blocked despite using Patchright, switching to headful mode is the first thing to try.
 
 ## Stealth API
 

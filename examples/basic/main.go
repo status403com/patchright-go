@@ -14,7 +14,9 @@ func main() {
 	}
 	defer pw.Stop()
 
-	browser, err := pw.Chromium.Launch()
+	browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+		Headless: patchright.Bool(false),
+	})
 	if err != nil {
 		log.Fatalf("could not launch browser: %v", err)
 	}

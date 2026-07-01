@@ -43,15 +43,7 @@ Node.js is required because the entire Playwright engine (CDP protocol handling,
 go get github.com/status403com/patchright-go
 ```
 
-Install the browser:
-
-```go
-patchright.Install(&patchright.RunOptions{
-    Browsers: []string{"chromium"},
-})
-```
-
-Or via CLI:
+The driver and browser are downloaded automatically on first `Run()` call — no separate install step is needed. You can also install explicitly via CLI:
 
 ```bash
 go run github.com/status403com/patchright-go/cmd/patchright@latest install chromium
@@ -76,6 +68,7 @@ import (
 )
 
 func main() {
+    // Downloads driver + browser automatically on first run
     pw, err := patchright.Run()
     if err != nil {
         log.Fatal(err)
@@ -179,22 +172,39 @@ browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
 
 All configuration can be set via `RunOptions` struct fields or environment variables. Struct fields take precedence.
 
+`Run()` is idempotent: if the driver and browsers are already present at the configured path, the call skips the download. If they are missing, they are downloaded automatically before starting.
+
 ```go
 patchright.Run(&patchright.RunOptions{
     DriverDirectory: "/custom/driver/path",
+    BrowsersPath:    "/custom/browsers/path",
     NodeJSPath:      "/usr/local/bin/node",
     NpmRegistry:     "https://registry.npmmirror.com",
     Browsers:        []string{"chromium"},
 })
 ```
 
-| RunOptions field | Env var | Description |
-|-----------------|---------|-------------|
-| `DriverDirectory` | `PATCHRIGHT_DRIVER_PATH` | Driver installation directory |
-| `NodeJSPath` | `PATCHRIGHT_NODEJS_PATH` | Path to Node.js binary |
-| `CLIPath` | `PATCHRIGHT_CLI_PATH` | Path to cli.js |
-| `NpmRegistry` | `PATCHRIGHT_NPM_REGISTRY` | npm registry URL |
-| `NodeMirror` | `NODE_MIRROR` | Node.js download mirror |
+| RunOptions field | Env var | Default | Description |
+|-----------------|---------|---------|-------------|
+| `DriverDirectory` | `PATCHRIGHT_DRIVER_PATH` | `<cwd>/bin/patchright-driver` | Driver installation directory |
+| `BrowsersPath` | `PLAYWRIGHT_BROWSERS_PATH` | `~/.cache/ms-playwright` | Browser installation directory |
+| `NodeJSPath` | `PATCHRIGHT_NODEJS_PATH` | auto-downloaded | Path to Node.js binary |
+| `CLIPath` | `PATCHRIGHT_CLI_PATH` | `<DriverDirectory>/package/cli.js` | Path to cli.js |
+| `NpmRegistry` | `PATCHRIGHT_NPM_REGISTRY` | `https://registry.npmjs.org` | npm registry URL |
+| `NodeMirror` | `NODE_MIRROR` | `https://nodejs.org/dist` | Node.js download mirror |
+
+### Using your own Chrome
+
+Skip the browser download entirely and point to an existing Chrome installation:
+
+```go
+pw, err := patchright.Run(&patchright.RunOptions{
+    SkipInstallBrowsers: true,
+})
+browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    ExecutablePath: patchright.String("/usr/bin/google-chrome"),
+})
+```
 
 ## Running multiple browsers
 

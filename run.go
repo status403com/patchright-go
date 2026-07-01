@@ -96,6 +96,9 @@ func (d *PatchrightDriver) isUpToDateDriver() (bool, error) {
 func (d *PatchrightDriver) Command(arg ...string) *exec.Cmd {
 	cmd := exec.Command(getNodeExecutable(d.options), append([]string{getDriverCliJs(d.options)}, arg...)...)
 	cmd.SysProcAttr = defaultSysProcAttr
+	if d.options.BrowsersPath != "" {
+		cmd.Env = append(os.Environ(), "PLAYWRIGHT_BROWSERS_PATH="+d.options.BrowsersPath)
+	}
 	return cmd
 }
 
@@ -401,8 +404,7 @@ func (d *PatchrightDriver) uninstallBrowsers() error {
 // RunOptions are custom options to run the driver
 type RunOptions struct {
 	// DriverDirectory is the path to the patchright driver directory.
-	// Falls back to PATCHRIGHT_DRIVER_PATH env var, then the default cache
-	// directory (~/.cache/patchright-go/<version> on Linux).
+	// Falls back to PATCHRIGHT_DRIVER_PATH env var, then <cwd>/bin/patchright-driver.
 	DriverDirectory string
 	// NodeJSPath overrides the Node.js binary path. Falls back to
 	// PATCHRIGHT_NODEJS_PATH env var. Required on platforms without a prebuilt
@@ -418,6 +420,10 @@ type RunOptions struct {
 	// NodeMirror overrides the Node.js distribution mirror URL. Falls back to
 	// NODE_MIRROR env var. Default: https://nodejs.org/dist
 	NodeMirror string
+	// BrowsersPath overrides where browsers are downloaded to.
+	// Falls back to PLAYWRIGHT_BROWSERS_PATH env var, then the Playwright
+	// default (~/.cache/ms-playwright on Linux).
+	BrowsersPath string
 	// OnlyInstallShell only downloads the headless shell. (For chromium browsers only)
 	OnlyInstallShell bool
 	// NoInstallShell does not install chromium headless shell. (For chromium browsers only)
@@ -436,9 +442,10 @@ type RunOptions struct {
 	DryRun bool
 }
 
-// Install does download the driver and the browsers.
+// Install downloads the driver and the browsers depending on [RunOptions].
 //
-// Use this before patchright.Run() or use patchright cli to install the driver and browsers
+// It is idempotent: if the driver and browsers are already present and
+// up-to-date, the call is a fast no-op.
 func Install(options ...*RunOptions) error {
 	driver, err := NewDriver(options...)
 	if err != nil {
@@ -452,20 +459,16 @@ func Install(options ...*RunOptions) error {
 
 // Run starts a Patchright instance.
 //
-// Requires the driver and the browsers to be installed before.
-// Either use Install() or use patchright cli.
+// If the driver (or browsers) are not yet installed in [RunOptions.DriverDirectory],
+// they are downloaded automatically. Subsequent calls with an up-to-date
+// driver skip the download.
 func Run(options ...*RunOptions) (*Patchright, error) {
 	driver, err := NewDriver(options...)
 	if err != nil {
 		return nil, fmt.Errorf("could not get driver instance: %w", err)
 	}
-	up2date, err := driver.isUpToDateDriver()
-	if err != nil || !up2date {
-		ferr := fmt.Errorf("please install the driver (v%s) first", patchrightCliVersion)
-		if err != nil {
-			ferr = fmt.Errorf("%w: %w", ferr, err)
-		}
-		return nil, ferr
+	if err := driver.Install(); err != nil {
+		return nil, fmt.Errorf("could not install driver: %w", err)
 	}
 	connection, err := driver.run()
 	if err != nil {
@@ -489,11 +492,11 @@ func transformRunOptions(options ...*RunOptions) (*RunOptions, error) {
 		option.DriverDirectory = os.Getenv("PATCHRIGHT_DRIVER_PATH")
 	}
 	if option.DriverDirectory == "" {
-		cacheDirectory, err := getDefaultCacheDirectory()
+		cwd, err := os.Getwd()
 		if err != nil {
-			return nil, fmt.Errorf("could not get default cache directory: %w", err)
+			return nil, fmt.Errorf("could not get working directory: %w", err)
 		}
-		option.DriverDirectory = filepath.Join(cacheDirectory, "patchright-go", patchrightCliVersion)
+		option.DriverDirectory = filepath.Join(cwd, "bin", "patchright-driver")
 	}
 	if option.Stdout == nil {
 		option.Stdout = os.Stdout

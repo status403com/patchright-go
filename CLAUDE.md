@@ -68,11 +68,14 @@ go test ./... -timeout 120s    # includes integration tests (downloads driver + 
 
 | Env var | Purpose |
 |---------|---------|
-| `PATCHRIGHT_DRIVER_PATH` | Override driver directory |
+| `PATCHRIGHT_DRIVER_PATH` | Override driver directory (default: `<cwd>/bin/patchright-driver`) |
+| `PLAYWRIGHT_BROWSERS_PATH` | Override browser download directory (default: `~/.cache/ms-playwright`) |
 | `PATCHRIGHT_NODEJS_PATH` | Use preinstalled Node.js |
 | `PATCHRIGHT_CLI_PATH` | Override cli.js path |
 | `PATCHRIGHT_NPM_REGISTRY` | npm registry mirror |
 | `NODE_MIRROR` | Node.js download mirror |
+
+Note: `Run()` is idempotent — it auto-installs the driver and browsers if missing. No separate `Install()` call is required.
 
 ## Updating to new Patchright version
 

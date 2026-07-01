@@ -71,7 +71,7 @@ func TestRunOptions_OnlyInstallShell(t *testing.T) {
 	require.NoError(t, err)
 	browserPath := t.TempDir()
 
-	t.Setenv("PATCHRIGHT_BROWSERS_PATH", browserPath)
+	t.Setenv("PLAYWRIGHT_BROWSERS_PATH", browserPath)
 
 	err = driver.Install()
 	require.NoError(t, err)
@@ -93,11 +93,11 @@ func TestDriverInstall(t *testing.T) {
 		t.Fatalf("could not start driver: %v", err)
 	}
 	browserPath := t.TempDir()
-	err = os.Setenv("PATCHRIGHT_BROWSERS_PATH", browserPath)
+	err = os.Setenv("PLAYWRIGHT_BROWSERS_PATH", browserPath)
 	if err != nil {
-		t.Fatalf("could not set PATCHRIGHT_BROWSERS_PATH: %v", err)
+		t.Fatalf("could not set PLAYWRIGHT_BROWSERS_PATH: %v", err)
 	}
-	defer os.Unsetenv("PATCHRIGHT_BROWSERS_PATH") //nolint:errcheck
+	defer os.Unsetenv("PLAYWRIGHT_BROWSERS_PATH") //nolint:errcheck
 	err = driver.Install()
 	if err != nil {
 		t.Fatalf("could not install driver: %v", err)

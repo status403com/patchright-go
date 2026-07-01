@@ -5,20 +5,20 @@ Concise reference for using patchright-go with LLMs. Import as:
 import patchright "github.com/status403com/patchright-go"
 ```
 
-## Install driver + browser (one-time)
-
-```go
-patchright.Install(&patchright.RunOptions{
-    Browsers: []string{"chromium"},
-})
-```
-
 ## Start and stop
+
+`Run()` is idempotent — it downloads the driver and browser automatically on first call, and skips the download on subsequent calls when everything is already present.
 
 ```go
 pw, err := patchright.Run()
 if err != nil { log.Fatal(err) }
 defer pw.Stop()
+
+// With custom paths
+pw, err := patchright.Run(&patchright.RunOptions{
+    DriverDirectory: "/tmp/drv/patchright-driver",
+    BrowsersPath:    "/tmp/drv/browsers",
+})
 ```
 
 ## Launch browser
@@ -295,14 +295,26 @@ patchright.Int(5)           // *int
 | `Route` | In route handlers |
 | `Frame` | From `page.MainFrame()` |
 
+## Using your own Chrome
+
+```go
+pw, err := patchright.Run(&patchright.RunOptions{
+    SkipInstallBrowsers: true,
+})
+browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    ExecutablePath: patchright.String("/usr/bin/google-chrome"),
+})
+```
+
 ## Env vars (all optional)
 
-| Var | Purpose |
-|-----|---------|
-| `PATCHRIGHT_DRIVER_PATH` | Override driver directory |
-| `PATCHRIGHT_NODEJS_PATH` | Custom Node.js binary |
-| `PATCHRIGHT_CLI_PATH` | Custom cli.js path |
-| `PATCHRIGHT_NPM_REGISTRY` | npm mirror |
-| `NODE_MIRROR` | Node.js download mirror |
+| Var | Purpose | Default |
+|-----|---------|---------|
+| `PATCHRIGHT_DRIVER_PATH` | Override driver directory | `<cwd>/bin/patchright-driver` |
+| `PLAYWRIGHT_BROWSERS_PATH` | Override browser directory | `~/.cache/ms-playwright` |
+| `PATCHRIGHT_NODEJS_PATH` | Custom Node.js binary | auto-downloaded |
+| `PATCHRIGHT_CLI_PATH` | Custom cli.js path | `<DriverDirectory>/package/cli.js` |
+| `PATCHRIGHT_NPM_REGISTRY` | npm mirror | `https://registry.npmjs.org` |
+| `NODE_MIRROR` | Node.js download mirror | `https://nodejs.org/dist` |
 
 All env vars can also be set via `RunOptions` struct fields (which take precedence).

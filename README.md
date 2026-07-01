@@ -193,19 +193,6 @@ patchright.Run(&patchright.RunOptions{
 | `NpmRegistry` | `PATCHRIGHT_NPM_REGISTRY` | `https://registry.npmjs.org` | npm registry URL |
 | `NodeMirror` | `NODE_MIRROR` | `https://nodejs.org/dist` | Node.js download mirror |
 
-### Using your own Chrome
-
-Skip the browser download entirely and point to an existing Chrome installation:
-
-```go
-pw, err := patchright.Run(&patchright.RunOptions{
-    SkipInstallBrowsers: true,
-})
-browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-    ExecutablePath: patchright.String("/usr/bin/google-chrome"),
-})
-```
-
 ## Running multiple browsers
 
 Patchright supports running many browser instances from a single Go process:

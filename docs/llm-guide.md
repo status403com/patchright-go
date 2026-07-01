@@ -295,17 +295,6 @@ patchright.Int(5)           // *int
 | `Route` | In route handlers |
 | `Frame` | From `page.MainFrame()` |
 
-## Using your own Chrome
-
-```go
-pw, err := patchright.Run(&patchright.RunOptions{
-    SkipInstallBrowsers: true,
-})
-browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
-    ExecutablePath: patchright.String("/usr/bin/google-chrome"),
-})
-```
-
 ## Env vars (all optional)
 
 | Var | Purpose | Default |

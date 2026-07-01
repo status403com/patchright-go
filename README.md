@@ -193,6 +193,19 @@ patchright.Run(&patchright.RunOptions{
 | `NpmRegistry` | `PATCHRIGHT_NPM_REGISTRY` | `https://registry.npmjs.org` | npm registry URL |
 | `NodeMirror` | `NODE_MIRROR` | `https://nodejs.org/dist` | Node.js download mirror |
 
+### Using your own Chrome
+
+Patchright's anti-detection patches are all in the driver layer, not the browser binary, so you can use your system-installed Chrome instead of downloading Chromium:
+
+```go
+pw, err := patchright.Run(&patchright.RunOptions{
+    SkipInstallBrowsers: true,
+})
+browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    Channel: patchright.String("chrome"),
+})
+```
+
 ## Running multiple browsers
 
 Patchright supports running many browser instances from a single Go process:

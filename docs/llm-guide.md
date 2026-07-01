@@ -295,6 +295,19 @@ patchright.Int(5)           // *int
 | `Route` | In route handlers |
 | `Frame` | From `page.MainFrame()` |
 
+## Using your own Chrome
+
+Patches are in the driver, not the browser binary — system Chrome works with full anti-detection:
+
+```go
+pw, err := patchright.Run(&patchright.RunOptions{
+    SkipInstallBrowsers: true,
+})
+browser, err := pw.Chromium.Launch(patchright.BrowserTypeLaunchOptions{
+    Channel: patchright.String("chrome"),
+})
+```
+
 ## Env vars (all optional)
 
 | Var | Purpose | Default |

@@ -176,6 +176,7 @@ All configuration can be set via `RunOptions` struct fields or environment varia
 
 ```go
 patchright.Run(&patchright.RunOptions{
+    Version:         "1.60.0",                        // pin a specific patchright version
     DriverDirectory: "/custom/driver/path",
     BrowsersPath:    "/custom/browsers/path",
     NodeJSPath:      "/usr/local/bin/node",
@@ -186,6 +187,7 @@ patchright.Run(&patchright.RunOptions{
 
 | RunOptions field | Env var | Default | Description |
 |-----------------|---------|---------|-------------|
+| `Version` | — | built-in default | Patchright driver version to download and use |
 | `DriverDirectory` | `PATCHRIGHT_DRIVER_PATH` | `<cwd>/bin/patchright-driver` | Driver installation directory |
 | `BrowsersPath` | `PLAYWRIGHT_BROWSERS_PATH` | `~/.cache/ms-playwright` | Browser installation directory |
 | `NodeJSPath` | `PATCHRIGHT_NODEJS_PATH` | auto-downloaded | Path to Node.js binary |

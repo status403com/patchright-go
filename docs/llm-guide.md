@@ -14,8 +14,9 @@ pw, err := patchright.Run()
 if err != nil { log.Fatal(err) }
 defer pw.Stop()
 
-// With custom paths
+// With custom paths and pinned version
 pw, err := patchright.Run(&patchright.RunOptions{
+    Version:         "1.60.0",
     DriverDirectory: "/tmp/drv/patchright-driver",
     BrowsersPath:    "/tmp/drv/browsers",
 })

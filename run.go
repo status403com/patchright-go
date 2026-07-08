@@ -49,7 +49,7 @@ func NewDriver(options ...*RunOptions) (*PatchrightDriver, error) {
 	}
 	return &PatchrightDriver{
 		options: transformed,
-		Version: patchrightCliVersion,
+		Version: transformed.Version,
 	}, nil
 }
 
@@ -413,6 +413,9 @@ type RunOptions struct {
 	// CLIPath overrides the cli.js path. Falls back to PATCHRIGHT_CLI_PATH
 	// env var. Useful for custom driver layouts.
 	CLIPath string
+	// Version overrides the patchright driver version to download and use.
+	// When empty, the library's built-in default version is used.
+	Version string
 	// NpmRegistry overrides the npm registry URL for downloading the patchright
 	// package. Falls back to PATCHRIGHT_NPM_REGISTRY env var. Default:
 	// https://registry.npmjs.org
@@ -487,6 +490,9 @@ func transformRunOptions(options ...*RunOptions) (*RunOptions, error) {
 	}
 	if option.OnlyInstallShell && option.NoInstallShell {
 		return nil, fmt.Errorf("OnlyInstallShell and NoInstallShell cannot be set at the same time")
+	}
+	if option.Version == "" {
+		option.Version = patchrightCliVersion
 	}
 	if option.DriverDirectory == "" {
 		option.DriverDirectory = os.Getenv("PATCHRIGHT_DRIVER_PATH")

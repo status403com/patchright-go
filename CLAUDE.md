@@ -64,16 +64,17 @@ go test ./... -timeout 120s    # includes integration tests (downloads driver + 
 - `generated-*.go` - Auto-generated types from Playwright protocol (+ Patchright additions)
 - `cmd/patchright/` - CLI tool for driver/browser management
 
-## Key env vars (all optional, struct fields preferred)
+## Key config (all optional, struct fields preferred)
 
-| Env var | Purpose |
-|---------|---------|
-| `PATCHRIGHT_DRIVER_PATH` | Override driver directory (default: `<cwd>/bin/patchright-driver`) |
-| `PLAYWRIGHT_BROWSERS_PATH` | Override browser download directory (default: `~/.cache/ms-playwright`) |
-| `PATCHRIGHT_NODEJS_PATH` | Use preinstalled Node.js |
-| `PATCHRIGHT_CLI_PATH` | Override cli.js path |
-| `PATCHRIGHT_NPM_REGISTRY` | npm registry mirror |
-| `NODE_MIRROR` | Node.js download mirror |
+| RunOptions field | Env var | Purpose |
+|-----------------|---------|---------|
+| `Version` | — | Patchright driver version (default: built-in) |
+| `DriverDirectory` | `PATCHRIGHT_DRIVER_PATH` | Override driver directory (default: `<cwd>/bin/patchright-driver`) |
+| `BrowsersPath` | `PLAYWRIGHT_BROWSERS_PATH` | Override browser download directory (default: `~/.cache/ms-playwright`) |
+| `NodeJSPath` | `PATCHRIGHT_NODEJS_PATH` | Use preinstalled Node.js |
+| `CLIPath` | `PATCHRIGHT_CLI_PATH` | Override cli.js path |
+| `NpmRegistry` | `PATCHRIGHT_NPM_REGISTRY` | npm registry mirror |
+| `NodeMirror` | `NODE_MIRROR` | Node.js download mirror |
 
 Note: `Run()` is idempotent — it auto-installs the driver and browsers if missing. No separate `Install()` call is required.
 

@@ -187,13 +187,38 @@ patchright.Run(&patchright.RunOptions{
 
 | RunOptions field | Env var | Default | Description |
 |-----------------|---------|---------|-------------|
-| `Version` | — | built-in default | Patchright driver version to download and use |
-| `DriverDirectory` | `PATCHRIGHT_DRIVER_PATH` | `<cwd>/bin/patchright-driver` | Driver installation directory |
+| `Driver` | — | `patchright` | Driver flavor: `patchright` (patched, Chromium stealth) or `playwright` (vanilla, for Firefox/WebKit) |
+| `Version` | — | built-in default | Driver version to download and use |
+| `DriverDirectory` | `PATCHRIGHT_DRIVER_PATH` | `<cwd>/bin/<driver>-driver` | Driver installation directory |
 | `BrowsersPath` | `PLAYWRIGHT_BROWSERS_PATH` | `~/.cache/ms-playwright` | Browser installation directory |
 | `NodeJSPath` | `PATCHRIGHT_NODEJS_PATH` | auto-downloaded | Path to Node.js binary |
 | `CLIPath` | `PATCHRIGHT_CLI_PATH` | `<DriverDirectory>/package/cli.js` | Path to cli.js |
 | `NpmRegistry` | `PATCHRIGHT_NPM_REGISTRY` | `https://registry.npmjs.org` | npm registry URL |
 | `NodeMirror` | `NODE_MIRROR` | `https://nodejs.org/dist` | Node.js download mirror |
+
+### Driving Firefox / WebKit (vanilla driver)
+
+Patchright's stealth is Chromium-only, and its driver rewrites Firefox's execution
+context for Chromium — so it cannot drive Firefox or WebKit. For those (including the
+Camoufox anti-detect Firefox), select the **vanilla Playwright driver**, which
+patchright-go downloads for you (`playwright` + `playwright-core` instead of the
+patchright packages):
+
+```go
+pw, err := patchright.Run(&patchright.RunOptions{
+    Driver:              patchright.DriverPlaywright, // vanilla Playwright driver
+    Version:             "1.60.0",                    // pin a Camoufox-compatible version
+    SkipInstallBrowsers: true,                        // e.g. supply a Camoufox binary yourself
+})
+browser, err := pw.Firefox.Launch(patchright.BrowserTypeLaunchOptions{
+    ExecutablePath: patchright.String("/path/to/camoufox"),
+})
+```
+
+No patchright stealth is applied to the vanilla driver. The two flavors install into
+separate default directories (`bin/patchright-driver` vs `bin/playwright-driver`) so
+they never collide. See [camoufox-go](https://github.com/status403com/camoufox-go)
+for the full Camoufox fingerprinting story.
 
 ### Using your own Chrome
 

@@ -17,6 +17,19 @@ import (
 	"strings"
 )
 
+// Driver flavors selectable via RunOptions.Driver.
+const (
+	// DriverPatchright is the default: the patched Playwright build with
+	// Chromium anti-detection. Downloads the "patchright"/"patchright-core"
+	// npm packages.
+	DriverPatchright = "patchright"
+	// DriverPlaywright is the upstream, unpatched Playwright driver. Downloads
+	// the "playwright"/"playwright-core" npm packages. Use it to drive
+	// Firefox/WebKit (including Camoufox), which the patchright driver does not
+	// support. Patchright's Chromium stealth is not applied to this driver.
+	DriverPlaywright = "playwright"
+)
+
 const (
 	patchrightCliVersion = "1.61.1"
 	// nodeVersion is the Node.js runtime downloaded alongside the driver when no
@@ -177,15 +190,16 @@ func (d *PatchrightDriver) DownloadDriver() error {
 // package from the npm registry and extracts its "package/" contents into the
 // driver directory, so that <DriverDirectory>/package/cli.js exists.
 func (d *PatchrightDriver) downloadPatchrightPackage() error {
-	url := fmt.Sprintf("%s/patchright/-/patchright-%s.tgz", npmRegistry(d.options), d.Version)
+	pkg := d.options.Driver // "patchright" or "playwright"
+	url := fmt.Sprintf("%s/%s/-/%s-%s.tgz", npmRegistry(d.options), pkg, pkg, d.Version)
 	body, err := downloadWithRetry(url)
 	if err != nil {
-		return fmt.Errorf("could not download patchright: %w", err)
+		return fmt.Errorf("could not download %s: %w", pkg, err)
 	}
 
 	gzReader, err := gzip.NewReader(bytes.NewReader(body))
 	if err != nil {
-		return fmt.Errorf("could not read patchright archive: %w", err)
+		return fmt.Errorf("could not read %s archive: %w", pkg, err)
 	}
 	defer gzReader.Close() //nolint:errcheck
 
@@ -197,7 +211,7 @@ func (d *PatchrightDriver) downloadPatchrightPackage() error {
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("could not read patchright archive: %w", err)
+			return fmt.Errorf("could not read %s archive: %w", pkg, err)
 		}
 		// npm tarballs nest everything under a top-level "package/" directory,
 		// which is exactly the layout the driver expects on disk.
@@ -214,30 +228,31 @@ func (d *PatchrightDriver) downloadPatchrightPackage() error {
 		extracted = true
 	}
 	if !extracted {
-		return fmt.Errorf("no files extracted from patchright %s", d.Version)
+		return fmt.Errorf("no files extracted from %s %s", pkg, d.Version)
 	}
 	return nil
 }
 
-// downloadPatchrightCore downloads patchright-core, the actual driver
-// implementation, and installs it as a node_module within the patchright
-// package so that require('patchright-core') resolves correctly.
+// downloadPatchrightCore downloads the driver's core package (patchright-core or
+// playwright-core), the actual driver implementation, and installs it as a
+// node_module within the main package so that require('<driver>-core') resolves.
 func (d *PatchrightDriver) downloadPatchrightCore() error {
-	url := fmt.Sprintf("%s/patchright-core/-/patchright-core-%s.tgz", npmRegistry(d.options), d.Version)
+	core := d.options.Driver + "-core" // "patchright-core" or "playwright-core"
+	url := fmt.Sprintf("%s/%s/-/%s-%s.tgz", npmRegistry(d.options), core, core, d.Version)
 	body, err := downloadWithRetry(url)
 	if err != nil {
-		return fmt.Errorf("could not download patchright-core: %w", err)
+		return fmt.Errorf("could not download %s: %w", core, err)
 	}
 
 	gzReader, err := gzip.NewReader(bytes.NewReader(body))
 	if err != nil {
-		return fmt.Errorf("could not read patchright-core archive: %w", err)
+		return fmt.Errorf("could not read %s archive: %w", core, err)
 	}
 	defer gzReader.Close() //nolint:errcheck
 
-	// Extract into <DriverDirectory>/package/node_modules/patchright-core/
-	// so that require('patchright-core') from the patchright package resolves.
-	nodeModulesDir := filepath.Join(d.options.DriverDirectory, "package", "node_modules", "patchright-core")
+	// Extract into <DriverDirectory>/package/node_modules/<core>/ so that
+	// require('<core>') from the main package resolves.
+	nodeModulesDir := filepath.Join(d.options.DriverDirectory, "package", "node_modules", core)
 	tarReader := tar.NewReader(gzReader)
 	extracted := false
 	for {
@@ -246,7 +261,7 @@ func (d *PatchrightDriver) downloadPatchrightCore() error {
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("could not read patchright-core archive: %w", err)
+			return fmt.Errorf("could not read %s archive: %w", core, err)
 		}
 		if header.Typeflag != tar.TypeReg || !strings.HasPrefix(header.Name, "package/") {
 			continue
@@ -262,7 +277,7 @@ func (d *PatchrightDriver) downloadPatchrightCore() error {
 		extracted = true
 	}
 	if !extracted {
-		return fmt.Errorf("no files extracted from patchright-core %s", d.Version)
+		return fmt.Errorf("no files extracted from %s %s", core, d.Version)
 	}
 	return nil
 }
@@ -309,6 +324,11 @@ func (d *PatchrightDriver) downloadNode() error {
 }
 
 func (d *PatchrightDriver) patchDriverBundle() error {
+	// These are patchright-specific bundle fixups; never touch a vanilla
+	// Playwright driver.
+	if d.options.Driver != DriverPatchright {
+		return nil
+	}
 	coreBundlePath := filepath.Join(d.options.DriverDirectory, "package", "lib", "coreBundle.js")
 	data, err := os.ReadFile(coreBundlePath)
 	if err != nil {
@@ -403,8 +423,12 @@ func (d *PatchrightDriver) uninstallBrowsers() error {
 
 // RunOptions are custom options to run the driver
 type RunOptions struct {
-	// DriverDirectory is the path to the patchright driver directory.
-	// Falls back to PATCHRIGHT_DRIVER_PATH env var, then <cwd>/bin/patchright-driver.
+	// Driver selects which upstream driver to download and run:
+	// DriverPatchright (default) or DriverPlaywright. Use DriverPlaywright to
+	// drive Firefox/WebKit (e.g. Camoufox), which the patchright driver cannot.
+	Driver string
+	// DriverDirectory is the path to the driver directory.
+	// Falls back to PATCHRIGHT_DRIVER_PATH env var, then <cwd>/bin/<driver>-driver.
 	DriverDirectory string
 	// NodeJSPath overrides the Node.js binary path. Falls back to
 	// PATCHRIGHT_NODEJS_PATH env var. Required on platforms without a prebuilt
@@ -491,6 +515,12 @@ func transformRunOptions(options ...*RunOptions) (*RunOptions, error) {
 	if option.OnlyInstallShell && option.NoInstallShell {
 		return nil, fmt.Errorf("OnlyInstallShell and NoInstallShell cannot be set at the same time")
 	}
+	if option.Driver == "" {
+		option.Driver = DriverPatchright
+	}
+	if option.Driver != DriverPatchright && option.Driver != DriverPlaywright {
+		return nil, fmt.Errorf("invalid Driver %q (want %q or %q)", option.Driver, DriverPatchright, DriverPlaywright)
+	}
 	if option.Version == "" {
 		option.Version = patchrightCliVersion
 	}
@@ -502,7 +532,9 @@ func transformRunOptions(options ...*RunOptions) (*RunOptions, error) {
 		if err != nil {
 			return nil, fmt.Errorf("could not get working directory: %w", err)
 		}
-		option.DriverDirectory = filepath.Join(cwd, "bin", "patchright-driver")
+		// Driver-specific default dir so the two flavors don't collide when they
+		// happen to share a version string.
+		option.DriverDirectory = filepath.Join(cwd, "bin", option.Driver+"-driver")
 	}
 	if option.Stdout == nil {
 		option.Stdout = os.Stdout

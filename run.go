@@ -93,9 +93,28 @@ func (d *PatchrightDriver) isUpToDateDriver() (bool, error) {
 	} else if err != nil {
 		return false, fmt.Errorf("could not check if driver is up2date: %w", err)
 	}
+	// A partial or interrupted first install can leave package/cli.js present but the
+	// bundled Node.js runtime missing, which otherwise wedges every later run on
+	// "could not run driver: ... node[.exe]: no such file" (isUpToDateDriver used to
+	// hard-error here instead of re-downloading). When we manage the runtime
+	// ourselves, treat a missing driver Node as not-installed so DownloadDriver
+	// re-fetches package + core + node cleanly. A caller-supplied Node (NodeJSPath /
+	// PATCHRIGHT_NODEJS_PATH) is left alone — that path is the caller's to fix.
+	managedNode := d.options.NodeJSPath == "" && os.Getenv("PATCHRIGHT_NODEJS_PATH") == ""
+	if managedNode {
+		if _, err := os.Stat(getNodeExecutable(d.options)); os.IsNotExist(err) {
+			return false, nil
+		}
+	}
 	cmd := d.Command("--version")
 	output, err := cmd.Output()
 	if err != nil {
+		// Driver is present but cannot be run — a corrupt/partial install. Re-download
+		// rather than failing permanently (DownloadDriver overwrites in place). Only do
+		// this for the runtime we manage; a broken caller-supplied Node is surfaced.
+		if managedNode {
+			return false, nil
+		}
 		return false, fmt.Errorf("could not run driver: %w", err)
 	}
 	if bytes.Contains(output, []byte(d.Version)) {

@@ -282,6 +282,10 @@ The API is identical to [playwright-go](https://pkg.go.dev/github.com/mxschmitt/
 - [playwright-go](https://github.com/playwright-community/playwright-go) by [Max Schmitt](https://github.com/mxschmitt)
 - [Playwright](https://playwright.dev/) by Microsoft
 
+## Maintained by status403
+
+patchright-go is built and maintained by [status403](https://status403.com/?utm_source=github&utm_medium=referral&utm_campaign=patchright-go), a software house specializing in web scraping, reverse engineering and anti-bot protected targets. For how the detection this library avoids actually works, see [Reverse Engineering Anti-Bot JavaScript](https://status403.com/blog/reverse-engineering-antibot-javascript?utm_source=github&utm_medium=referral&utm_campaign=patchright-go) and [TLS Fingerprinting vs Anti-Bots](https://status403.com/blog/tls-fingerprinting-antibots-tls-client?utm_source=github&utm_medium=referral&utm_campaign=patchright-go).
+
 ## License
 
 Apache-2.0
